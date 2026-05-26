@@ -1,0 +1,18 @@
+{
+    "glyphicons halflings": {
+        "normal": "glyphicons_halflings_normal_91a063d0f3772b152f606edc0383c99d"
+    },
+    "font awesome 5 brands": {
+        "normal": "font_awesome_5_brands_normal_2d44439d2f8758218d40f9603c0c8b38"
+    },
+    "font awesome 5 free": {
+        "normal": "E:\\xampp-portable\\htdocs\\logsheet\\application\\libraries\\dompdf-master\\vendor\\dompdf\\dompdf\/lib\/fonts\/font_awesome_5_free_normal_730aa1e8472a904a655013a01c508a96",
+        "900": "font_awesome_5_free_900_b99d826b39ee364e4376b366e374c8fa"
+    },
+    "linearicons-free": {
+        "normal": "linearicons_free_normal_0fe0571b06f284142efc93a9687df855"
+    },
+    "summernote": {
+        "normal": "summernote_normal_fb03f0b9a405ef99669448cbc0a36f75"
+    }
+}

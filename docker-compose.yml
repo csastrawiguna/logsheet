@@ -1,0 +1,39 @@
+# version: '3.8'
+
+services:
+  # Service Apache & PHP 7.4 keur Logsheet
+  web:
+    image: php:7.4-apache
+    container_name: php74_logsheet
+    entrypoint: sh -c "a2enmod rewrite && docker-php-ext-install mysqli && apache2-foreground"
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    restart: always
+    networks:
+      - default
+      - db_hub
+
+  # DB Server Pusat (MariaDB) - Port Standar 3306
+  logsheet:
+    image: mariadb:latest
+    container_name: logsheet # <== IEU HOSTNAME UTAMA NU BAKAL DITEMBAK KU CCCINFO
+    environment:
+      MYSQL_ROOT_PASSWORD: menolaktua
+      MYSQL_DATABASE: logsheet # <== Otomatis nyieun db logsheet pas awal jalan
+    ports:
+      - "3306:3306" # <== Rapih make port standar luar jero
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    networks:
+      - default
+      - db_hub
+
+volumes:
+  db_data: # Data disimpen di dieu
+
+networks:
+  db_hub:
+    external: true

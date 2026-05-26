@@ -1,0 +1,57 @@
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# CodeIgniter 3 Cache & Logs
+application/cache/*
+!application/cache/index.html
+application/logs/*
+!application/logs/index.html
+!application/*/.htaccess
+
+# Composer & Documentation
+composer.lock
+/vendor/
+/user_guide/
+user_guide_src/build/*
+user_guide_src/cilexer/build/*
+user_guide_src/cilexer/dist/*
+user_guide_src/cilexer/pycilexer.egg-info/*
+
+# IDE Files (NetBeans, PhpStorm, VSCode, Sublime)
+/nbproject/
+.idea/*
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+.vscode/
+
+# Testing
+/tests/tests/
+/tests/results/
+
+# Konfigurasi Sensitif
+.env
+/application/config/development/
+/application/config/production/
+/temp/*
+
+# Assets Lokal (Konten/Uploadan anu ulah milu ka GitHub)
+/assets/audio/*
+!/assets/audio/.gitkeep
+/assets/ckeditor4.25/*
+!/assets/ckeditor4.25/.gitkeep
+/assets/elFinder/*
+!/assets/elFinder/.gitkeep
+/assets/img/*
+!/assets/img/.gitkeep
+/assets/responsive_filemanager/source/*
+!/assets/responsive_filemanager/source/.gitkeep
+/assets/responsive_filemanager/thumbs/*
+!/assets/responsive_filemanager/thumbs/.gitkeep
+/assets/voices/*
+/assets/csindexfile/*
+/assets/material/*
