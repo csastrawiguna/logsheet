@@ -135,4 +135,92 @@ class Auxdata extends CI_Controller
             }
         }
     }
+
+    public function agentdaily()
+    {
+        $data['title'] = 'AUX Agent Daily';
+        $allowSelectAgent = [1, 5, 6, 7, 9];
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/navbar');
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('auxdata/aux-daily-byagent', $data);
+        $this->load->view('templates/footer', $data);
+    }
+
+    public function dailyall()
+    {
+        $data['title'] = 'AUX Daily All';
+        $allowSelectAgent = [1, 5, 6, 7, 9];
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/navbar');
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('auxdata/aux-daily-all', $data);
+        $this->load->view('templates/footer', $data);
+    }
+
+    public function uploadAuxDaily()
+    {
+        if (!empty($_FILES['uploadAuxDailyFile']['name'])) {
+            // get file extension
+            $extension = pathinfo($_FILES['uploadAuxDailyFile']['name'], PATHINFO_EXTENSION);
+
+            if ($extension == 'csv') {
+                // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Csv');
+            } elseif ($extension == 'xlsx') {
+                // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+            } else {
+                // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');
+            }
+            $reader->setReadDataOnly(true);
+            // $reader->setLoadSheetsOnly('daily');
+
+            // file path
+            $spreadsheet = $reader->load($_FILES['uploadAuxSummaryFile']['tmp_name']);
+            $allDataInSheet = $spreadsheet->getActiveSheet()->toArray(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+
+            // array Count
+            $dataUploaded = []; 
+            $numrow = 1;
+            foreach ($allDataInSheet as $row) {
+                if ($numrow > 1) {
+                    if($row['A'] == '' || $row['A'] == NULL) {
+                        continue;
+                    } else {
+                        $dataUploaded[] = [
+                            'month' => date("Y-m-01", strtotime($this->input->post('uploadAuxSummaryMonth'))),
+                            'agent' => $row['A'],
+                            'ext' => strtoupper($row['B']),
+                            'staffed_time' => strtoupper($row['C']),
+                            'aux_0' => strtoupper($row['D']),
+                            'aux_1' => strtoupper($row['E']),
+                            'aux_2' => strtoupper($row['F']),
+                            'aux_3' => strtoupper($row['G']),
+                            'aux_4' => strtoupper($row['H']),
+                            'aux_5' => strtoupper($row['I']),
+                            'aux_6' => strtoupper($row['J']),
+                            'aux_7' => strtoupper($row['K']),
+                            'aux_8' => strtoupper($row['L']),
+                            'aux_9' => strtoupper($row['M']),
+                            'aux_1099' => strtoupper($row['N']),
+                            'remark' => strtoupper($row['O']),
+                            'saved_by' => $this->session->userdata('user_id'),
+                            'saved_at' => date("Y-m-d h:i:s")
+                        ];
+                    }
+                }
+                $numrow++;
+            }
+            
+            // upload to database
+            if ($this->aux->uploadAuxSummaryFromExcel($dataUploaded) > 0) {
+                $this->session->set_flashdata('message', 'Success|success|Summary of AUX data uploaded!');
+                redirect('auxdata/index');
+            }
+        }
+    }
 }
