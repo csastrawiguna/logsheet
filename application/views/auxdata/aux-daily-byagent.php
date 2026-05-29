@@ -38,11 +38,11 @@
                             </select>
                         </div>
                         <label for="auxByAgentDateStart" class="col-sm-1 ml-5">Period</label>
-                        <div class="col-sm-2">
-                            <input type="date" id="auxByAgentDateStart" name="auxByAgentDateStart" class="form-control" value="<?= $startPeriod?>">
-                        </div>
-                        <div class="col-sm-2">
-                            <input type="date" id="auxByAgentDateEnd" name="auxByAgentDateEnd" class="form-control" value="<?= $endPeriod?>">
+                        <div class="col-sm-2" style="min-width: 160px;">
+                            <input type="date" id="auxByAgentDateStart" name="auxByAgentDateStart" class="form-control" value="">
+                        </div>-
+                        <div class="col-sm-2" style="min-width: 160px;">
+                            <input type="date" id="auxByAgentDateEnd" name="auxByAgentDateEnd" class="form-control" value="">
                         </div>
                         <div class="col-sm-1">
                           <div class="row ml-1">

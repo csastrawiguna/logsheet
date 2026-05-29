@@ -47,4 +47,14 @@ class Aux_model extends CI_Model
         $this->db->insert_batch('aux_monthly', $data);
 		return $this->db->affected_rows();
     }
+
+    public function getAuxDailyAllByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
+    {
+        if (!is_null($agent) || $agent == 'NULL' || $agent == NULL){
+            $this->db->where('agent', $agent);
+        }
+        $this->db->where('date >=', $startPeriod);
+        $this->db->where('date <=', $endPeriod);
+        return $this->db->get('aux_daily')->result_array();
+    }
 }

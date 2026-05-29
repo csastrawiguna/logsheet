@@ -139,7 +139,7 @@ class Auxdata extends CI_Controller
     public function agentdaily()
     {
         $data['title'] = 'AUX Agent Daily';
-        $allowSelectAgent = [1, 5, 6, 7, 9];
+        $allowSelectAgent = ['1', '5', '6', '7', '9'];
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/navbar');
@@ -151,13 +151,33 @@ class Auxdata extends CI_Controller
     public function dailyall()
     {
         $data['title'] = 'AUX Daily All';
-        $allowSelectAgent = [1, 5, 6, 7, 9];
+        $allowSelectAgent = ['1', '5', '6', '7', '9'];
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/navbar');
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view('auxdata/aux-daily-all', $data);
-        $this->load->view('templates/footer', $data);
+        if(!$this->input->post('auxDailyAllStartPeriod') && !$this->input->post('auxDailyAllEndPeriod')) {
+            $data['startPeriod'] = date("Y-m-d", strtotime("-1 days"));
+            $data['endPeriod'] = date("Y-m-d", strtotime("-1 days"));
+        } else {
+            $data['startPeriod'] = $this->input->post('auxDailyAllStartPeriod');
+            $data['endPeriod'] = $this->input->post('auxDailyAllEndPeriod');
+        }
+
+        $data['auxDailyByPeriod'] = $this->aux->getAuxDailyAllByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL);
+        $data['allAgents'] = $this->aux->getAllActiveAgent();
+
+        $this->form_validation->set_rules('addSingleAuxDailyAgent', 'Agent', 'trim|required');
+        $this->form_validation->set_rules('addSingleAuxDailyDate', 'Date', 'trim|required');
+
+        if ($this->form_validation->run() == false) {
+            
+            $this->load->view('templates/header', $data);
+            $this->load->view('templates/navbar');
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('auxdata/aux-daily-all', $data);
+            $this->load->view('templates/footer', $data);
+        } else {
+
+        }
+
     }
 
     public function uploadAuxDaily()
