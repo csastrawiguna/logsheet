@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Iseng extends CI_Controller
+class Iseng extends MY_Controller
 {
 	public function index()
 	{

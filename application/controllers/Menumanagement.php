@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Menumanagement extends CI_Controller
+class Menumanagement extends MY_Controller
 {
     public function __construct()
     {

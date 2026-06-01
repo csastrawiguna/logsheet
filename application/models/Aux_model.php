@@ -50,11 +50,38 @@ class Aux_model extends CI_Model
 
     public function getAuxDailyAllByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
     {
-        if (!is_null($agent) || $agent == 'NULL' || $agent == NULL){
-            $this->db->where('agent', $agent);
+        if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
+            $this->db->where_in('agent', $agent);
         }
         $this->db->where('date >=', $startPeriod);
         $this->db->where('date <=', $endPeriod);
         return $this->db->get('aux_daily')->result_array();
+    }
+
+    public function addNewAuxDailySingleData($data)
+    {
+        $this->db->insert('aux_daily', $data);
+        return $this->db->affected_rows();
+    }
+
+    public function editAuxDailySingleData($data)
+    {
+        $this->db->where('agent', $data['agent']);
+        $this->db->where('date', $data['date']);
+        $this->db->update('aux_daily', $data);
+        return $this->db->affected_rows();
+    }
+
+    public function deleteSingleAuxdaily($id)
+    {
+        $this->db->where('id', $id);
+        $this->db->delete('aux_daily');
+        return $this->db->affected_rows();
+    }
+
+    public function uploadAuxDailyFromExcel($data)
+    {
+        $this->db->insert_batch('aux_daily', $data);
+        return $this->db->affected_rows();
     }
 }

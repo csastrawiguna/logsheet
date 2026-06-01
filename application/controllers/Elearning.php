@@ -4,7 +4,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Elearning extends CI_Controller
+class Elearning extends MY_Controller
 {
     public function __construct()
     {

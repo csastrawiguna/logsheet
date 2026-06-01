@@ -3,9 +3,10 @@
 services:
   # Service Apache & PHP 7.4 keur Logsheet
   web:
-    image: php:7.4-apache
+    build: .
+    # image: php:7.4-apache
     container_name: php74_logsheet
-    entrypoint: sh -c "a2enmod rewrite && docker-php-ext-install mysqli && apache2-foreground"
+    # entrypoint: sh -c "a2enmod rewrite && docker-php-ext-install mysqli && apache2-foreground"
     ports:
       - "8080:80"
     volumes:

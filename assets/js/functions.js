@@ -47,29 +47,38 @@ $(function () {
 	}
 
 	function updateTampilanTabel(jadwal) {
+	    // 1. Validasi awal: Lamun data jadwalna kosong/ruksak, langsung eureun
+	    if (!jadwal) {
+	        console.log("Data jadwal kosong atawa corrupt.");
+	        return;
+	    }
+
 	    const d = new Date();
 	    const jamSekarang = d.getHours().toString().padStart(2, '0') + ":" + 
 	                        d.getMinutes().toString().padStart(2, '0');
 
-	    // 1. Daptar Id jeung Waktuna
+	    // 2. Mapping data (Urang paké operator '??' sangkan lamun kosong, otomatis jadi string kosong)
 	    const mapping = {
-	        '#sholatTimeImsak': jadwal.imsak,
-	        '#sholatTimeSubuh': jadwal.subuh,
-	        '#sholatTimeTerbit': jadwal.terbit,
-	        '#sholatTimeDhuha': jadwal.dhuha,
-	        '#sholatTimeZhuhur': jadwal.dzuhur,
-	        '#sholatTimeAshar': jadwal.ashar,
-	        '#sholatTimeMaghrib': jadwal.maghrib,
-	        '#sholatTimeIsya': jadwal.isya
+	        '#sholatTimeImsak': jadwal.imsak ?? '',
+	        '#sholatTimeSubuh': jadwal.subuh ?? '',
+	        '#sholatTimeTerbit': jadwal.terbit ?? '',
+	        '#sholatTimeDhuha': jadwal.dhuha ?? '',
+	        '#sholatTimeZhuhur': jadwal.dzuhur ?? '', // Tetep dzuhur saluyu jeung API Amang
+	        '#sholatTimeAshar': jadwal.ashar ?? '',
+	        '#sholatTimeMaghrib': jadwal.maghrib ?? '',
+	        '#sholatTimeIsya': jadwal.isya ?? ''
 	    };
 
 	    // Bersihkeun heula class aktif bilih aya nu nempel tina menit saencana
 	    $('.cardEachSholatTime').removeClass('sholat-aktif');
 
-	    // 2. Eusi angka jeung teangan mana nu kudu di-highlight
+	    // 3. TAH IEU TAMÉNGNA: Urang saring (filter) sangkan ngan data anu valid string hungkul nu asup sort
 	    let idAktif = "";
-	    let waktuSorted = Object.entries(mapping).sort((a, b) => a[1].localeCompare(b[1]));
+	    let waktuSorted = Object.entries(mapping)
+	        .filter(([id, waktu]) => typeof waktu === 'string' && waktu.trim() !== '')
+	        .sort((a, b) => a[1].localeCompare(b[1]));
 
+	    // 4. Loop keur ngasupkeun téks jeung nangtukeun mana nu aktif
 	    for (let i = 0; i < waktuSorted.length; i++) {
 	        const [id, waktu] = waktuSorted[i];
 	        $(id).find('.text-bold').text(waktu);
@@ -80,7 +89,7 @@ $(function () {
 	        }
 	    }
 
-	    // 3. Pasang class hurungna
+	    // 5. Pasang class hurungna
 	    if (idAktif) {
 	        $(idAktif).addClass('sholat-aktif');
 	    }
@@ -576,6 +585,136 @@ $(function () {
 	$("#tableSummaryAuxMonthly").DataTable({
 		"info" : false,
 	});
+
+	// AUX Daily
+	// Set label on Add New Data
+	$("#buttonAddSingleAuxDaily").on("click", function(){
+		// ambil tanggal kemarin (H-1)
+		const kamari = new Date();
+	    kamari.setDate(kamari.getDate() - 1);
+
+	    const formatTanggal = kamari.getFullYear() + '-' + 
+	                         String(kamari.getMonth() + 1).padStart(2, '0') + '-' + 
+	                         String(kamari.getDate()).padStart(2, '0');
+
+		$("#modalAddSingleAuxDaily form").attr("action", "");
+		$("#modalAddSingleAuxDailyLabel").html("Add Single Data AUX Daily - Time in second");
+		$("#addSingleAuxDailyAgent").val("");
+		$("#addSingleAuxDailyExtension").val("");
+		$("#addSingleAuxDailyDate").val(formatTanggal);
+		$("#addSingleAuxDailyStaffedtime").val(0);
+		$("#addSingleAuxDailyAux0").val(0);
+		$("#addSingleAuxDailyAux1").val(0);
+		$("#addSingleAuxDailyAux2").val(0);
+		$("#addSingleAuxDailyAux3").val(0);
+		$("#addSingleAuxDailyAux4").val(0);
+		$("#addSingleAuxDailyAux5").val(0);
+		$("#addSingleAuxDailyAux6").val(0);
+		$("#addSingleAuxDailyAux7").val(0);
+		$("#addSingleAuxDailyAux8").val(0);
+		$("#addSingleAuxDailyAux9").val(0);
+		$("#addSingleAuxDailyAux1099").val(0);
+		$("#addSingleAuxDailyRemark").val("");
+		$("#blackbookAddSubmit").html('<i class="fas fa-save"></i> Save');
+	});
+
+	// All Data - Edit label on edit button
+	$(".container-fluid").on("click", ".buttonEditSingleAuxDaily", function(){
+		$("#modalAddSingleAuxDaily form").attr("action", "updateSingleAuxDaily");
+		$("#modalAddSingleAuxDailyLabel").html("Edit Single Data AUX Daily");
+		$("#blackbookAddSubmit").html('<i class="fas fa-save"></i> Update');
+
+		$.ajax({
+			url : baseUrl + 'auxdata/singleAuxdailyByDateByAgent',
+			data: {
+				date : this.dataset.date,
+				agent : this.dataset.agent,
+			},
+			dataType : "json",
+			method : "post",
+			success : function(data) {
+				$("#addSingleAuxDailyAgent").val(data.agent);
+				$("#addSingleAuxDailyExtension").val(data.ext);
+				$("#addSingleAuxDailyDate").val(data.date);
+				$("#addSingleAuxDailyStaffedtime").val(data.staffed_time);
+				$("#addSingleAuxDailyAux0").val(data.aux_0);
+				$("#addSingleAuxDailyAux1").val(data.aux_1);
+				$("#addSingleAuxDailyAux2").val(data.aux_2);
+				$("#addSingleAuxDailyAux3").val(data.aux_3);
+				$("#addSingleAuxDailyAux4").val(data.aux_4);
+				$("#addSingleAuxDailyAux5").val(data.aux_5);
+				$("#addSingleAuxDailyAux6").val(data.aux_6);
+				$("#addSingleAuxDailyAux7").val(data.aux_7);
+				$("#addSingleAuxDailyAux8").val(data.aux_8);
+				$("#addSingleAuxDailyAux9").val(data.aux_9);
+				$("#addSingleAuxDailyAux1099").val(data.aux_1099);
+				$("#addSingleAuxDailyRemark").val(data.remark);
+			}
+		});
+	});
+
+	// View Detail AUX Daily
+	$(".container-fluid").on("click", ".buttonViewDetailSingleAuxDaily", function(e){
+		e.preventDefault();
+		$.ajax({
+			url : baseUrl + 'auxdata/singleAuxdailyByDateByAgent',
+			data: {
+				date : this.dataset.date,
+				agent : this.dataset.agent,
+			},
+			dataType : "json",
+			method : "post",
+			success : function(data) {
+				console.log()
+				var totalAux = parseInt(data.aux_0) + parseInt(data.aux_1) + parseInt(data.aux_2) + parseInt(data.aux_3) + parseInt(data.aux_4) + parseInt(data.aux_5) + parseInt(data.aux_6) + parseInt(data.aux_7) + parseInt(data.aux_8) + parseInt(data.aux_9) + parseInt(data.aux_1099);
+				$("#viewDetailSingleAuxDailyAgent").val(data.agent);
+				$("#viewDetailSingleAuxDailyDate").val(data.date);
+				$("#tdStaffedtime").html(convertToHoursMins(data.staffed_time));
+				$("#tdAuxtotal").html(convertToHoursMins(totalAux) + '<br>(' + parseFloat(totalAux * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux0").html(convertToHoursMins(data.aux_0) + '<br>(' + parseFloat(data.aux_0 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux1").html(convertToHoursMins(data.aux_1) + '<br>(' + parseFloat(data.aux_1 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux2").html(convertToHoursMins(data.aux_2) + '<br>(' + parseFloat(data.aux_2 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux3").html(convertToHoursMins(data.aux_3) + '<br>(' + parseFloat(data.aux_3 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux4").html(convertToHoursMins(data.aux_4) + '<br>(' + parseFloat(data.aux_4 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux5").html(convertToHoursMins(data.aux_5) + '<br>(' + parseFloat(data.aux_5 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux6").html(convertToHoursMins(data.aux_6) + '<br>(' + parseFloat(data.aux_6 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux7").html(convertToHoursMins(data.aux_7) + '<br>(' + parseFloat(data.aux_7 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux8").html(convertToHoursMins(data.aux_8) + '<br>(' + parseFloat(data.aux_8 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux9").html(convertToHoursMins(data.aux_9) + '<br>(' + parseFloat(data.aux_9 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAux1099").html(convertToHoursMins(data.aux_1099) + '<br>(' + parseFloat(data.aux_1099 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#viewDetailSingleAuxDailyRemark").val(data.remark);
+			}
+		});
+	})
+	function convertToHoursMins(time) {
+	    // Upami wektuna 0 atanapi sahandapeun, mulangkeun string "00:00:00"
+	    if (time < 1) {
+	        return "00:00:00";
+	    }
+	    
+	    // Milarian jam, menit, sareng detik
+	    var hours = Math.floor(time / 3600);
+	    var minutes = Math.floor((time % 3600) / 60);
+	    var seconds = Math.floor(time % 60);
+	    
+	    // Sprintf ala JavaScript: nambihan angka 0 di payun upami angkana < 10
+	    var formattedHours = String(hours).padStart(2, '0');
+	    var formattedMinutes = String(minutes).padStart(2, '0');
+	    var formattedSeconds = String(seconds).padStart(2, '0');
+	    
+	    // Gabungkeun janten HH:MM:SS
+	    return formattedHours + ':' + formattedMinutes + ':' + formattedSeconds;
+	}
+
+	// Delete button
+	$(".container-fluid").on("click", ".buttonDeleteSingleAuxDaily", function(e){
+		e.preventDefault();
+		var title = "Are you sure to delete?";
+		var text = "You won't be able to revert this Black note";
+		var link = this.dataset.link;
+		SwalConfirm(title, text, link, "Delete it", "warning");
+	});
+
 
 	// ===================================================
 
@@ -4793,6 +4932,11 @@ $(function () {
 	$("#navButtonLogout").on("click", function (e) {
 		const link = $(this).attr("href");
 		buttonLogout(e, link);
+	});
+
+	// DataTable
+	$(".dataTableBasic").DataTable({
+
 	});
 
 	function buttonLogout(e, link) {

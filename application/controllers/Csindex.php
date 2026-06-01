@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Csindex extends CI_Controller
+class Csindex extends MY_Controller
 {
     public function __construct()
     {

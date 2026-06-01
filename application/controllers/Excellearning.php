@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Excellearning extends CI_Controller
+class Excellearning extends MY_Controller
 {
     public function __construct()
     {

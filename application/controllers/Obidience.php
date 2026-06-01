@@ -9,7 +9,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Obidience extends CI_Controller
+class Obidience extends MY_Controller
 {
     public function __construct()
     {

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Blackbook extends CI_Controller
+class Blackbook extends MY_Controller
 {
     public function __construct()
     {

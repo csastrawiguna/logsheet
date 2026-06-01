@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Usermanagement extends CI_Controller
+class Usermanagement extends MY_Controller
 {
     public function __construct()
     {

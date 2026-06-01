@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Chat extends CI_Controller
+class Chat extends MY_Controller
 {
     public function __construct()
     {

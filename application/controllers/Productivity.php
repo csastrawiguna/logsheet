@@ -5,7 +5,7 @@ require "vendor/autoload.php";
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Productivity extends CI_Controller
+class Productivity extends MY_Controller
 {
     public function __construct()
     {

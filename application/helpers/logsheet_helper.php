@@ -56,33 +56,64 @@ function check_access()
 {
     $ci = get_instance();
     $role_access = $ci->session->userdata('role_access');
+    
+    // Sangkan aman, lamun can login langsung tunda ka halaman auth
+    if (!$role_access) {
+        redirect('auth');
+        exit;
+    }
+
     $menu = $ci->uri->segment(1);
     $submenu = $ci->uri->segment(2);
 
+    // Ambil data menu utama
     $queryMenu = $ci->db->get_where('menu', ['link' => $menu])->row_array();
+    
+    // VALIDASI 1: Lamun menu utama teu kapanggih di database, ulah diteruskeun
+    if (empty($queryMenu)) {
+        return; // atawa redirect('dashboard');
+    }
     $menu_id = $queryMenu['menu_id'];
 
-    // Check is have access to menu or not
-    $queryCheckMenuAccess = "SELECT menu.menu_id, menu.menu_name, menu.link FROM menu_access JOIN menu ON menu.menu_id = menu_access.menu_id WHERE menu_access.role_access = '$role_access' AND menu_access.menu_id = '$menu_id'";
+    // Pengecekan Hak Akses Menu Utama
+    $queryCheckMenuAccess = "SELECT menu.menu_id FROM menu_access 
+                             JOIN menu ON menu.menu_id = menu_access.menu_id 
+                             WHERE menu_access.role_access = '$role_access' AND menu_access.menu_id = '$menu_id'";
 
     if ($ci->db->query($queryCheckMenuAccess)->num_rows() < 1) {
         redirect('dashboard');
-    } else {
-        // Check is have access to submenu or not
-        $accessedSubmenu = $menu . "/" . $submenu;
+        exit;
+    } 
 
-        // Get submenu id
-        $submenu_id = $ci->db->get_where('submenu', ['submenu_link' => $accessedSubmenu])->row_array()['id'];
+    // Lamun lolos menu utama, cek naha halaman ieu boga submenu?
+    $accessedSubmenu = $menu . "/" . $submenu;
+    $checkSubmenuExist = $ci->db->get_where('submenu', ['submenu_link' => $accessedSubmenu])->row_array();
 
-        // Check existing on submenu access or not
-        $queryCheckSubmenuAccess = "SELECT submenu.id, submenu.submenu_link, submenu_access.role_access FROM submenu_access JOIN submenu ON submenu.id = submenu_access.submenu_id WHERE submenu_access.role_access = '$role_access' AND submenu_access.submenu_id = '$submenu_id'";
+    // VALIDASI 2: Jalankeun proteksi submenu NGAN LAMUN memang halaman eta boga submenu
+    if (!empty($checkSubmenuExist)) {
+        
+        $submenu_id = $checkSubmenuExist['id']; // Aman tina error null sabab geus dicek di luhur
 
-        // Get allowed submenu access
-        $queryAllowedSubmenu = "SELECT submenu.id, submenu.submenu_link, submenu_access.role_access FROM submenu_access JOIN submenu ON submenu.id = submenu_access.submenu_id WHERE submenu_access.role_access = '$role_access' AND submenu.menu_id = '$menu_id'";
-        $allowedSubmenu = $ci->db->query($queryAllowedSubmenu)->row_array()['submenu_link'];
+        // Cek naha role user boga akses ka submenu ieu?
+        $queryCheckSubmenuAccess = "SELECT submenu.id FROM submenu_access 
+                                    JOIN submenu ON submenu.id = submenu_access.submenu_id 
+                                    WHERE submenu_access.role_access = '$role_access' AND submenu_access.submenu_id = '$submenu_id'";
 
+        // Lamun teu boga akses, alihkeun ka submenu kahiji anu diidinan dumasar menu utama eta
         if ($ci->db->query($queryCheckSubmenuAccess)->num_rows() < 1) {
-            redirect($allowedSubmenu);
+            
+            $queryAllowedSubmenu = "SELECT submenu.submenu_link FROM submenu_access 
+                                    JOIN submenu ON submenu.id = submenu_access.submenu_id 
+                                    WHERE submenu_access.role_access = '$role_access' AND submenu.menu_id = '$menu_id' 
+                                    ORDER BY submenu.id ASC LIMIT 1";
+            
+            $allowedSubmenuQuery = $ci->db->query($queryAllowedSubmenu)->row_array();
+            
+            // Lamun aya submenu sejen nu diidinan, bikeun urlna, lamun euweuh balikeun ka dashboard
+            $redirectUrl = !empty($allowedSubmenuQuery) ? $allowedSubmenuQuery['submenu_link'] : 'dashboard';
+            
+            redirect($redirectUrl);
+            exit;
         }
     }
 }

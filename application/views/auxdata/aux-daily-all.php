@@ -4,16 +4,7 @@
         <div class="container-fluid">
             <div class="flashmessage" style="display: none;"><?= $this->session->flashdata('message'); ?></div>
             <?php 
-                $allowedChangeAgent = ['1', '5', '6', '9'];
-                // if(!$this->input->post()) {
-                //   $startPeriod = date("Y-m-01", strtotime("-6 months"));
-                //   $endPeriod = date("Y-m-01");
-                //   $agent = $this->session->userdata('user_id');
-                // } else {
-                //   $startPeriod = $this->input->post('auxByAgentDateStart');
-                //   $endPeriod = $this->input->post('auxByAgentDateEnd');
-                //   $agent = $this->input->post('auxByAgentSelectAgent');
-                // }
+                $allowedChangeAgent = in_array($this->session->userdata('role_access'), ['1', '5', '6', '9']);
 
                 require 'aux-function.php';
             ?>
@@ -23,7 +14,7 @@
                     AUX Daily (All Data) periode: <?= date("d F Y", strtotime($startPeriod)) ?> - <?= date("d F Y", strtotime($endPeriod)) ?>
                     <div class="card-tools">
                         <a href="#" data-toggle="modal" data-target="#modalUploadAuxDaily" class="text-white mr-3"><i class="fas fa-upload"></i> Upload File</a>
-                        <a href="#" data-toggle="modal" data-target="#modalAddSingleAuxDaily" class="text-white mr-3"><i class="fas fa-plus-circle"></i> Add Single Data</a>
+                        <a href="#" id="buttonAddSingleAuxDaily" data-toggle="modal" data-target="#modalAddSingleAuxDaily" class="text-white mr-3"><i class="fas fa-plus-circle"></i> Add Single Data</a>
                     </div>
                 </div>
                 <div class="card-body">                
@@ -45,10 +36,11 @@
                         <p class="h2 text-muted text-center"><i class="far fa-dizzy"></i></p>
                         <p class="lead text-center text-muted">No Data To Be Displayed</p>
                     <?php else : ?>
-                        <table id="tableAuxAgent" class="table ">
+                        <table id="tableAuxAgent" class="table dataTableBasic">
                             <thead>
                                 <tr class="border-top">
-                                    <th class="align-middle">Month</th>
+                                    <th class="align-middle">Agent</th>
+                                    <th class="align-middle">Date</th>
                                     <th class="text-right align-middle">Staffed<br>Login</th>
                                     <th class="text-right align-middle">TTL AUX</th>
                                     <th class="text-right align-middle">AUX<br>1,2,3,6</th>
@@ -56,63 +48,72 @@
                                     <th class="text-right align-middle">Pray<br><small>(AUX 1)</small></th>
                                     <th class="text-right align-middle">Break<br><small>(AUX 2)</small></th>
                                     <th class="text-right align-middle">Lunch<br><small>(AUX 3)</small></th>
-                                    <th class="text-right align-middle">Follow Up<br><small>(AUX 4)</small></th>
-                                    <th class="text-right align-middle">Callback<br><small>(AUX 5)</small></th>
                                     <th class="text-right align-middle">Input Data<br><small>(AUX 6)</small></th>
                                     <th class="text-right align-middle">Respon WA<br><small>(AUX 8)</small></th>
+                                    <th class="align-middle">Remark</th>
+                                    <th class="align-middle text-center">...</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach($auxDailyByPeriod as $row) : ?>
                                     <tr>
-                                        <td><?= date("M Y", strtotime($row['month'])) ?></td>
+                                        <td class="text-left"><?= $row['agent'] ?></td>
+                                        <td><?= date("d M 'y", strtotime($row['date'])) ?></td>
                                         <td class="text-right">
                                             <p><?= convertToHoursMins($row['staffed_time']) ?></p>
                                         </td>
                                         <td class="text-right">
                                             <p>
-                                                <?= number_format((($row['aux_0'] + $row['aux_1'] + $row['aux_2'] + $row['aux_3'] + $row['aux_4'] + $row['aux_5'] + $row['aux_6'] + $row['aux_7'] + $row['aux_8'] + $row['aux_9'] + $row['aux_1099']) / $row['staffed_time']) *100, 1) ?>%
+                                                  <?= convertToHoursMins($row['aux_0'] + $row['aux_1'] + $row['aux_2'] + $row['aux_3'] + $row['aux_4'] + $row['aux_5'] + $row['aux_6'] + $row['aux_7'] + $row['aux_8'] + $row['aux_9'] + $row['aux_1099']) ?>
                                                 <br>
                                                 <span class="text-muted">
-                                                  (<?= convertToHoursMins($row['aux_0'] + $row['aux_1'] + $row['aux_2'] + $row['aux_3'] + $row['aux_4'] + $row['aux_5'] + $row['aux_6'] + $row['aux_7'] + $row['aux_8'] + $row['aux_9'] + $row['aux_1099']) ?>)
+                                                (<?= number_format((($row['aux_0'] + $row['aux_1'] + $row['aux_2'] + $row['aux_3'] + $row['aux_4'] + $row['aux_5'] + $row['aux_6'] + $row['aux_7'] + $row['aux_8'] + $row['aux_9'] + $row['aux_1099']) / $row['staffed_time']) *100, 1) ?>%)
                                                 </span>
                                             </p>
                                         </td>
                                         <td class="text-right">
-                                            <p><?= number_format((($row['aux_1'] + $row['aux_2'] + $row['aux_3'] + $row['aux_6']) / $row['staffed_time']) *100, 1) ?>%<br>
-                                            <span class="text-muted">(<?= convertToHoursMins($row['aux_1'] + $row['aux_2'] + $row['aux_3'] + $row['aux_6']) ?>)</span></p>
+                                            <p><?= convertToHoursMins($row['aux_1'] + $row['aux_2'] + $row['aux_3'] + $row['aux_6']) ?><br>
+                                            <span class="text-muted">
+                                                (<?= number_format((($row['aux_1'] + $row['aux_2'] + $row['aux_3'] + $row['aux_6']) / $row['staffed_time']) *100, 1) ?>%)
+                                            </span></p>
                                         </td>
                                         <td class="text-right">
-                                            <p> <?= number_format(($row['aux_0'] / $row['staffed_time']) *100, 1) ?>%<br>
-                                            <span class="text-muted">(<?= convertToHoursMins($row['aux_0']) ?>)</span></p>
+                                            <p><?= convertToHoursMins($row['aux_0']) ?><br>
+                                            <span class="text-muted">(<?= number_format(($row['aux_0'] / $row['staffed_time']) *100, 1) ?>%)</span></p>
                                         </td>
                                         <td class="text-right">
-                                            <p><?= number_format(($row['aux_1'] / $row['staffed_time']) *100, 1) ?>%<br>
-                                            <span class="text-muted">(<?= convertToHoursMins($row['aux_1']) ?>)</span></p>
+                                            <p><?= convertToHoursMins($row['aux_1']) ?><br>
+                                            <span class="text-muted">(<?= number_format(($row['aux_1'] / $row['staffed_time']) *100, 1) ?>%)</span></p>
                                         </td>
                                         <td class="text-right">
-                                            <p><?= number_format(($row['aux_2'] / $row['staffed_time']) *100, 1) ?>%<br>
-                                            <span class="text-muted">(<?= convertToHoursMins($row['aux_2']) ?>)</span></p>
+                                            <p><?= convertToHoursMins($row['aux_2']) ?><br>
+                                            <span class="text-muted">(<?= number_format(($row['aux_2'] / $row['staffed_time']) *100, 1) ?>%)</span></p>
                                         </td>
                                         <td class="text-right">
-                                            <p><?= number_format(($row['aux_3'] / $row['staffed_time']) *100, 1) ?>%<br>
-                                            <span class="text-muted">(<?= convertToHoursMins($row['aux_3']) ?>)</span></p>
+                                            <p><?= convertToHoursMins($row['aux_3']) ?><br>
+                                            <span class="text-muted">(<?= number_format(($row['aux_3'] / $row['staffed_time']) *100, 1) ?>%)</span></p>
                                         </td>
                                         <td class="text-right">
-                                            <p><?= number_format(($row['aux_4'] / $row['staffed_time']) *100, 1) ?>%<br>
-                                            <span class="text-muted">(<?= convertToHoursMins($row['aux_4']) ?>)</span></p>
+                                            <p><?= convertToHoursMins($row['aux_6']) ?><br>
+                                            <span class="text-muted">(<?= number_format(($row['aux_6'] / $row['staffed_time']) *100, 1) ?>%)</span></p>
                                         </td>
                                         <td class="text-right">
-                                            <p><?= number_format(($row['aux_5'] / $row['staffed_time']) *100, 1) ?>%<br>
-                                            <span class="text-muted">(<?= convertToHoursMins($row['aux_5']) ?>)</span></p>
+                                            <p><?= convertToHoursMins($row['aux_8']) ?><br>
+                                            <span class="text-muted">(<?= number_format(($row['aux_8'] / $row['staffed_time']) *100, 1) ?>%)</span></p>
                                         </td>
-                                        <td class="text-right">
-                                            <p><?= number_format(($row['aux_6'] / $row['staffed_time']) *100, 1) ?>%<br>
-                                            <span class="text-muted">(<?= convertToHoursMins($row['aux_6']) ?>)</span></p>
+                                        <td>
+                                            <?= $row['remark'] ?>
                                         </td>
-                                        <td class="text-right">
-                                            <p><?= number_format(($row['aux_8'] / $row['staffed_time']) *100, 1) ?>%<br>
-                                            <span class="text-muted">(<?= convertToHoursMins($row['aux_8']) ?>)</span></p>
+                                        <td>
+                                            <a href="#" class="text-success buttonViewDetailSingleAuxDaily" data-toggle="modal" data-target="#modalViewDetailSingleRowAuxDaily" data-date="<?= $row['date'] ?>" data-agent="<?= $row['agent'] ?>"><i class="fas fa-search"></i></a><br>
+                                            <?php if ($allowedChangeAgent) : ?>
+                                                <a href="#" class="buttonDeleteSingleAuxDaily" data-link="<?= base_url('auxdata/deleteSingleDaily/' . $row['id']) ?>">
+                                                    <i class="fas fa-times text-danger"></i>
+                                                </a>
+                                                <a href="#" class="buttonEditSingleAuxDaily ml-1" data-toggle="modal" data-target="#modalAddSingleAuxDaily" data-date="<?= $row['date'] ?>" data-agent="<?= $row['agent'] ?>">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -137,7 +138,6 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" class="form-control" name="addSingleAuxDailyId" id="addSingleAuxDailyId">
                     <div class="row border-bottom">
                         <div class="col-sm-5">
                             <div class="form-group">
@@ -164,7 +164,7 @@
                             <div class="form-group">
                                 <label for="addSingleAuxDailyDate" class="form-label">Date</label>
                                 <div class="">
-                                    <input type="date" class="form-control" id="addSingleAuxDailyDate" name="addSingleAuxDailyDate">
+                                    <input type="date" class="form-control" id="addSingleAuxDailyDate" name="addSingleAuxDailyDate" value="<?= date("Y-m-d", strtotime("-1 days")) ?>">
                                 </div>
                             </div>
                         </div>
@@ -255,5 +255,120 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal Upload AUX Daily -->
+<div class="modal fade" id="modalUploadAuxDaily" tabindex="-1" role="dialog" aria-labelledby="modalUploadAuxDailyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <?= form_open_multipart('auxdata/uploadAuxDaily'); ?>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalUploadAuxDailyLabel">Upload AUX Daily</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="uploadAuxDailyFile">Data <i class="fas fa-file-excel"></i></label>
+                        <input type="file" accept=".xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="form-control" id="uploadAuxDailyFile" name="uploadAuxDailyFile">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                    <button type="reset" class="btn btn-warning" name="uploadAuxDailyFileReset" id="uploadAuxDailyFileReset"><i class="fas fa-undo"></i> Reset</button>
+                    <button type="submit" class="btn btn-primary" name="uploadAuxDailyFileSubmit" id="uploadAuxDailyFileSubmit"><i class="fas fa-upload"></i> Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal View Detail per Row Data -->
+<div class="modal fade" id="modalViewDetailSingleRowAuxDaily" tabindex="-1" role="dialog" aria-labelledby="modalViewDetailSingleRowAuxDailyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="min-width: 900px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalViewDetailSingleRowAuxDailyLabel">Detail AUX Daily by Agent</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="viewDetailSingleAuxDailyAgent">Agent</label>
+                            <input type="" class="form-control" id="viewDetailSingleAuxDailyAgent" value="" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="viewDetailSingleAuxDailyDate">Date</label>
+                            <input type="" class="form-control" id="viewDetailSingleAuxDailyDate" value="" readonly>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-bordered mb-3" style="max-width: 320px;">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center align-top">Staffed Time</th>
+                            <th class="text-center align-top">Total AUX</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center" id="tdStaffedtime"></td>
+                            <td class="text-center" id="tdAuxtotal"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th colspan="11" class="align-middle text-center">AUX</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center align-top">AUX 0<br>Hanging</th>
+                            <th class="text-center align-top">AUX 1<br>Pray</th>
+                            <th class="text-center align-top">AUX 2<br>Break</th>
+                            <th class="text-center align-top">AUX 3<br>Lunch</th>
+                            <th class="text-center align-top">AUX 4<br>Survey</th>
+                            <th class="text-center align-top">AUX 5<br>Callback</th>
+                            <th class="text-center align-top">AUX 6<br>Input<br>Data</th>
+                            <th class="text-center align-top">AUX 7<br>BO</th>
+                            <th class="text-center align-top">AUX 8<br>WA resp.</th>
+                            <th class="text-center align-top">AUX 9<br>Login</th>
+                            <th class="text-center align-top">Others</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center align-top" id="tdAux0"></td>
+                            <td class="text-center align-top" id="tdAux1"></td>
+                            <td class="text-center align-top" id="tdAux2"></td>
+                            <td class="text-center align-top" id="tdAux3"></td>
+                            <td class="text-center align-top" id="tdAux4"></td>
+                            <td class="text-center align-top" id="tdAux5"></td>
+                            <td class="text-center align-top" id="tdAux6"></td>
+                            <td class="text-center align-top" id="tdAux7"></td>
+                            <td class="text-center align-top" id="tdAux8"></td>
+                            <td class="text-center align-top" id="tdAux9"></td>
+                            <td class="text-center align-top" id="tdAux1099"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="viewDetailSingleAuxDailyRemark">Remark</label>
+                            <input type="" class="form-control" id="viewDetailSingleAuxDailyRemark" value="" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+            </div>
+        </div>
     </div>
 </div>

@@ -4,7 +4,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Survey extends CI_Controller
+class Survey extends MY_Controller
 {
     public function __construct()
     {
