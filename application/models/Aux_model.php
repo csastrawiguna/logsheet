@@ -48,10 +48,13 @@ class Aux_model extends CI_Model
 		return $this->db->affected_rows();
     }
 
-    public function getAuxDailyAllByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
+    public function getAuxDailyAllByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL, $isoh = NULL)
     {
         if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
             $this->db->where_in('agent', $agent);
+        }
+        if (!is_null($isoh) || $isoh !== 'NULL' || $isoh !== NULL){
+            $this->db->where_in('is_oh', $isoh);
         }
         $this->db->where('date >=', $startPeriod);
         $this->db->where('date <=', $endPeriod);
@@ -66,8 +69,7 @@ class Aux_model extends CI_Model
 
     public function editAuxDailySingleData($data)
     {
-        $this->db->where('agent', $data['agent']);
-        $this->db->where('date', $data['date']);
+        $this->db->where('id', $data['id']);
         $this->db->update('aux_daily', $data);
         return $this->db->affected_rows();
     }

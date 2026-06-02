@@ -141,11 +141,39 @@ class Auxdata extends MY_Controller
         $data['title'] = 'AUX Agent Daily';
         $allowSelectAgent = ['1', '5', '6', '7', '9'];
 
+        if(!$this->input->post('auxDailyByAgentStartPeriod') && !$this->input->post('auxDailyByAgentEndPeriod')) {
+            $data['startPeriod'] = date("Y-m-d", strtotime("-1 days"));
+            $data['endPeriod'] = date("Y-m-d");
+            $data['agent'] = $this->session->userdata('user_id');
+            $data['isOh'] = ['1', '0'];
+        } else {
+            $data['startPeriod'] = $this->input->post('auxDailyByAgentStartPeriod');
+            $data['endPeriod'] = $this->input->post('auxDailyByAgentEndPeriod');
+            $data['agent'] = $this->input->post('auxByAgentSelectAgent');
+            $data['isOh'] = $this->input->post('auxDailyByAgentIsoh');
+        }
+
+        $data['auxDailyByAgent'] = $this->aux->getAuxDailyAllByPeriodByAgent($data['startPeriod'], $data['endPeriod'], $data['agent'], $data['isOh']);
+        $data['allAgents'] = $this->aux->getAllActiveAgent();
+
         $this->load->view('templates/header', $data);
         $this->load->view('templates/navbar');
         $this->load->view('templates/sidebar', $data);
         $this->load->view('auxdata/aux-daily-byagent', $data);
         $this->load->view('templates/footer', $data);
+    }
+
+    public function test()
+    {
+        $data['startPeriod'] = $this->input->post('auxDailyByAgentStartPeriod');
+        $data['endPeriod'] = $this->input->post('auxDailyByAgentEndPeriod');
+        $data['agent'] = $this->input->post('auxByAgentSelectAgent');
+        $data['isOh'] = $this->input->post('auxDailyByAgentIsoh');
+
+        $data['auxDailyByAgent'] = $this->aux->getAuxDailyAllByPeriodByAgent($data['startPeriod'], $data['endPeriod'], $data['agent'], $data['isOh']);
+        print_r($_POST);
+        echo "<br><br>";
+        var_dump($data['auxDailyByAgent']);
     }
 
     public function dailyall()
@@ -178,6 +206,7 @@ class Auxdata extends MY_Controller
         } else {
             $newData = [
                 'date' => date("Y-m-d", strtotime($this->input->post('addSingleAuxDailyDate'))),
+                'is_oh' => $this->input->post('addSingleAuxDailyIsoh'),
                 'agent' => $this->input->post('addSingleAuxDailyAgent'),
                 'staffed_time' => $this->input->post('addSingleAuxDailyStaffedtime'),
                 'ext' => $this->input->post('addSingleAuxDailyExtension'),
@@ -196,6 +225,7 @@ class Auxdata extends MY_Controller
                 'saved_by' => $this->session->userdata('user_id'),
                 'saved_at' => date("Y-m-d H:i:s")
             ];
+            var_dump($newData);die;
 
             // upload to database
             if ($this->aux->addNewAuxDailySingleData($newData) > 0) {
@@ -231,7 +261,9 @@ class Auxdata extends MY_Controller
             redirect('auxdata/dailyall');
         } else {
             $updateData = [
+                'id' => $this->input->post('addSingleAuxDailyId'),
                 'date' => date("Y-m-d", strtotime($this->input->post('addSingleAuxDailyDate'))),
+                'is_oh' => $this->input->post('addSingleAuxDailyIsoh'),
                 'agent' => $this->input->post('addSingleAuxDailyAgent'),
                 'staffed_time' => $this->input->post('addSingleAuxDailyStaffedtime'),
                 'ext' => $this->input->post('addSingleAuxDailyExtension'),
@@ -304,7 +336,8 @@ class Auxdata extends MY_Controller
                     'N' => $sheet->getCell('N' . $rowNum)->getCalculatedValue(),
                     'O' => $sheet->getCell('O' . $rowNum)->getCalculatedValue(),
                     'P' => $sheet->getCell('P' . $rowNum)->getCalculatedValue(),
-                    'Q' => $sheet->getCell('Q' . $rowNum)->getCalculatedValue()
+                    'Q' => $sheet->getCell('Q' . $rowNum)->getCalculatedValue(),
+                    'R' => $sheet->getCell('R' . $rowNum)->getCalculatedValue()
                 ];
             }
 
@@ -319,6 +352,7 @@ class Auxdata extends MY_Controller
                     } else {
                         $dataUploaded[] = [
                             'date'         => date("Y-m-d", strtotime($row['A'])),
+                            'is_oh'        => $row['R'],
                             'agent'        => $row['B'],
                             'ext'          => $row['D'],
                             'staffed_time' => $row['E'],

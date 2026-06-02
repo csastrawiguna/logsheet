@@ -128,6 +128,7 @@ DROP TABLE IF EXISTS `aux_daily`;
 CREATE TABLE `aux_daily` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` date DEFAULT NULL,
+  `is_oh` tinyint(4) NOT NULL DEFAULT 1,
   `agent` varchar(32) NOT NULL,
   `ext` varchar(16) NOT NULL,
   `staffed_time` int(11) NOT NULL DEFAULT 0,
@@ -1183,6 +1184,20 @@ CREATE TABLE `vote_list` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 
+DROP TABLE IF EXISTS `wa_raw`;
+CREATE TABLE `wa_raw` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `review_id` int(11) NOT NULL,
+  `interaction_id` varchar(24) NOT NULL,
+  `sender` varchar(32) NOT NULL,
+  `datetime` datetime NOT NULL,
+  `message` varchar(4096) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_date` (`review_id`),
+  KEY `idx_agent` (`message`(768))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `wa_review`;
 CREATE TABLE `wa_review` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1201,7 +1216,7 @@ CREATE TABLE `wa_review` (
   `updated_by` varchar(32) DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `wa_review_period_IDX` (`period`,`agent`,`customer_phone`) USING BTREE
+  KEY `period_agent` (`period`,`agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
@@ -1214,4 +1229,4 @@ CREATE TABLE `working_calendar` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 
--- 2026-05-27 08:16:34 UTC
+-- 2026-06-02 15:46:28 UTC

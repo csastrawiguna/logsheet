@@ -4,8 +4,6 @@
         <div class="container-fluid">
             <div class="flashmessage" style="display: none;"><?= $this->session->flashdata('message'); ?></div>
             <?php 
-                $allowedChangeAgent = in_array($this->session->userdata('role_access'), ['1', '5', '6', '9']);
-
                 require 'aux-function.php';
             ?>
 
@@ -58,7 +56,10 @@
                                 <?php foreach($auxDailyByPeriod as $row) : ?>
                                     <tr>
                                         <td class="text-left"><?= $row['agent'] ?></td>
-                                        <td><?= date("d M 'y", strtotime($row['date'])) ?></td>
+                                        <td>
+                                            <?= date("d M 'y", strtotime($row['date'])) ?>
+                                            <?= isohToBadge($row['is_oh']) ?>        
+                                        </td>
                                         <td class="text-right">
                                             <p><?= convertToHoursMins($row['staffed_time']) ?></p>
                                         </td>
@@ -105,13 +106,13 @@
                                             <?= $row['remark'] ?>
                                         </td>
                                         <td>
-                                            <a href="#" class="text-success buttonViewDetailSingleAuxDaily" data-toggle="modal" data-target="#modalViewDetailSingleRowAuxDaily" data-date="<?= $row['date'] ?>" data-agent="<?= $row['agent'] ?>"><i class="fas fa-search"></i></a><br>
+                                            <a href="#" class="text-primary buttonViewDetailSingleAuxDaily" data-toggle="modal" data-target="#modalViewDetailSingleRowAuxDaily" data-date="<?= $row['date'] ?>" data-agent="<?= $row['agent'] ?>"><i class="fas fa-search"></i></a><br>
                                             <?php if ($allowedChangeAgent) : ?>
                                                 <a href="#" class="buttonDeleteSingleAuxDaily" data-link="<?= base_url('auxdata/deleteSingleDaily/' . $row['id']) ?>">
                                                     <i class="fas fa-times text-danger"></i>
                                                 </a>
                                                 <a href="#" class="buttonEditSingleAuxDaily ml-1" data-toggle="modal" data-target="#modalAddSingleAuxDaily" data-date="<?= $row['date'] ?>" data-agent="<?= $row['agent'] ?>">
-                                                    <i class="fas fa-edit"></i>
+                                                    <i class="fas fa-edit text-dark"></i>
                                                 </a>
                                             <?php endif; ?>
                                         </td>
@@ -128,10 +129,10 @@
 
 <!-- Modal Add Single Data -->
 <div class="modal fade" id="modalAddSingleAuxDaily" tabindex="-1" role="dialog" aria-labelledby="modalAddSingleAuxDailyLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width: 540px;">
         <form method="POST" action="">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-light">
                     <h5 class="modal-title" id="modalAddSingleAuxDailyLabel">Add Single Data AUX Daily - Time in second</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -139,7 +140,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="row border-bottom">
-                        <div class="col-sm-5">
+                        <input type="hidden" class="form-control" id="addSingleAuxDailyId" name="addSingleAuxDailyId" value="">
+                        <div class="col-sm-4">
                             <div class="form-group">
                                 <label for="addSingleAuxDailyAgent" class="form-label">Agent</label>
                                 <div class="">
@@ -160,11 +162,27 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-4">
                             <div class="form-group">
                                 <label for="addSingleAuxDailyDate" class="form-label">Date</label>
                                 <div class="">
                                     <input type="date" class="form-control" id="addSingleAuxDailyDate" name="addSingleAuxDailyDate" value="<?= date("Y-m-d", strtotime("-1 days")) ?>">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group text-center">
+                                <label for="addSingleAuxDailyIsoh" class="form-label">Weekday?</label>
+                                <div class="pretty p-svg p-curve">
+                                    <input type="hidden" name="addSingleAuxDailyIsoh" value="0" checked>
+                                    <input type="checkbox" id="addSingleAuxDailyIsoh" name="addSingleAuxDailyIsoh" value="1" checked>
+                                    <div class="state p-primary">
+                                        <!-- svg path -->
+                                        <svg class="svg svg-icon" viewBox="0 0 20 20">
+                                            <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
+                                        </svg>
+                                        <label></label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -249,9 +267,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
-                    <button type="reset" class="btn btn-warning" name="blackbookAddReset" id="blackbookAddReset"><i class="fas fa-undo"></i> Reset</button>
-                    <button type="submit" class="btn btn-primary" name="blackbookAddSubmit" id="blackbookAddSubmit"><i class="fas fa-save"></i> Save</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                    <button type="reset" class="btn btn-warning" name="addSingleAuxDailyReset" id="addSingleAuxDailyReset"><i class="fas fa-undo"></i> Reset</button>
+                    <button type="submit" class="btn btn-primary" name="addSingleAuxDailySubmit" id="addSingleAuxDailySubmit"><i class="fas fa-save"></i> Save</button>
                 </div>
             </div>
         </form>
@@ -263,21 +281,23 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <?= form_open_multipart('auxdata/uploadAuxDaily'); ?>
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalUploadAuxDailyLabel">Upload AUX Daily</h5>
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="modalUploadAuxDailyLabel">Upload AUX Daily Data</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="uploadAuxDailyFile">Data <i class="fas fa-file-excel"></i></label>
+                        <label for="uploadAuxDailyFile">Choose file</label>
                         <input type="file" accept=".xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="form-control" id="uploadAuxDailyFile" name="uploadAuxDailyFile">
+                    </div>
+                    <div class="form-group mt-4">
+                        <a href="<?= base_url('files/Format_Upload_AUX_Daily.xlsx') ?>"><i class="fas fa-file-excel"></i> Format upload</a>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
-                    <button type="reset" class="btn btn-warning" name="uploadAuxDailyFileReset" id="uploadAuxDailyFileReset"><i class="fas fa-undo"></i> Reset</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
                     <button type="submit" class="btn btn-primary" name="uploadAuxDailyFileSubmit" id="uploadAuxDailyFileSubmit"><i class="fas fa-upload"></i> Save</button>
                 </div>
             </div>
@@ -289,7 +309,7 @@
 <div class="modal fade" id="modalViewDetailSingleRowAuxDaily" tabindex="-1" role="dialog" aria-labelledby="modalViewDetailSingleRowAuxDailyLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="min-width: 900px;">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-light">
                 <h5 class="modal-title" id="modalViewDetailSingleRowAuxDailyLabel">Detail AUX Daily by Agent</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -298,30 +318,40 @@
             <div class="modal-body">
                 <div class="form-group">
                     <div class="form-row">
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-3" style="max-width: 160px;">
                             <label for="viewDetailSingleAuxDailyAgent">Agent</label>
                             <input type="" class="form-control" id="viewDetailSingleAuxDailyAgent" value="" readonly>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-2" style="max-width: 120px;">
                             <label for="viewDetailSingleAuxDailyDate">Date</label>
                             <input type="" class="form-control" id="viewDetailSingleAuxDailyDate" value="" readonly>
                         </div>
+                        <div class="form-group col-md-1 ml-0">
+                            <label for="viewDetailSingleAuxDailyIsoh">&nbsp;</label>
+                            <span class="" id="viewDetailSingleAuxDailyIsoh"><span class="badge badge-primary badge-pill px-2 py-1">Weekday</span></span>
+                        </div>
+                        <div class="form-group col-md-2">
+                        </div>
+                        <div class="form-group col-md-4 text-right">
+                            <table class="table table-bordered mb-3">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-center align-top">Staffed Time</th>
+                                        <th class="text-center align-top">Total AUX</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center" id="tdStaffedtime"></td>
+                                        <td class="text-center" id="tdAuxtotal"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <table class="table table-bordered mb-3" style="max-width: 320px;">
-                    <thead class="thead-light">
-                        <tr>
-                            <th class="text-center align-top">Staffed Time</th>
-                            <th class="text-center align-top">Total AUX</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-center" id="tdStaffedtime"></td>
-                            <td class="text-center" id="tdAuxtotal"></td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <!-- Detail breakdown AUX -->
                 <table class="table table-bordered">
                     <thead class="thead-light">
                         <tr>
@@ -367,7 +397,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                <button type="button" class="btn btn-outline-info" data-dismiss="modal"><i class="fas fa-check"></i> Done</button>
             </div>
         </div>
     </div>

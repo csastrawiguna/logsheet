@@ -597,6 +597,7 @@ $(function () {
 	                         String(kamari.getMonth() + 1).padStart(2, '0') + '-' + 
 	                         String(kamari.getDate()).padStart(2, '0');
 
+		$("#addSingleAuxDailyId").val("");
 		$("#modalAddSingleAuxDaily form").attr("action", "");
 		$("#modalAddSingleAuxDailyLabel").html("Add Single Data AUX Daily - Time in second");
 		$("#addSingleAuxDailyAgent").val("");
@@ -633,6 +634,12 @@ $(function () {
 			dataType : "json",
 			method : "post",
 			success : function(data) {
+				if (data.is_oh == 1) {
+					$("#addSingleAuxDailyIsoh").prop("checked", true);
+				} else {
+					$("#addSingleAuxDailyIsoh").prop("checked", false);
+				}
+				$("#addSingleAuxDailyId").val(data.id);
 				$("#addSingleAuxDailyAgent").val(data.agent);
 				$("#addSingleAuxDailyExtension").val(data.ext);
 				$("#addSingleAuxDailyDate").val(data.date);
@@ -665,23 +672,30 @@ $(function () {
 			dataType : "json",
 			method : "post",
 			success : function(data) {
-				console.log()
 				var totalAux = parseInt(data.aux_0) + parseInt(data.aux_1) + parseInt(data.aux_2) + parseInt(data.aux_3) + parseInt(data.aux_4) + parseInt(data.aux_5) + parseInt(data.aux_6) + parseInt(data.aux_7) + parseInt(data.aux_8) + parseInt(data.aux_9) + parseInt(data.aux_1099);
+				var badgeIsoh = '';
+				if (data.is_oh == 1) {
+					badgeIsoh = '<span class="badge badge-success badge-pill px-2 py-1">Weekday</span>';
+				} else {
+					badgeIsoh = '<span class="badge badge-warning badge-pill px-2 py-1">Overtime</span>';
+				}
+				
 				$("#viewDetailSingleAuxDailyAgent").val(data.agent);
 				$("#viewDetailSingleAuxDailyDate").val(data.date);
+				$("#viewDetailSingleAuxDailyIsoh").html(badgeIsoh);
 				$("#tdStaffedtime").html(convertToHoursMins(data.staffed_time));
-				$("#tdAuxtotal").html(convertToHoursMins(totalAux) + '<br>(' + parseFloat(totalAux * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux0").html(convertToHoursMins(data.aux_0) + '<br>(' + parseFloat(data.aux_0 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux1").html(convertToHoursMins(data.aux_1) + '<br>(' + parseFloat(data.aux_1 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux2").html(convertToHoursMins(data.aux_2) + '<br>(' + parseFloat(data.aux_2 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux3").html(convertToHoursMins(data.aux_3) + '<br>(' + parseFloat(data.aux_3 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux4").html(convertToHoursMins(data.aux_4) + '<br>(' + parseFloat(data.aux_4 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux5").html(convertToHoursMins(data.aux_5) + '<br>(' + parseFloat(data.aux_5 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux6").html(convertToHoursMins(data.aux_6) + '<br>(' + parseFloat(data.aux_6 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux7").html(convertToHoursMins(data.aux_7) + '<br>(' + parseFloat(data.aux_7 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux8").html(convertToHoursMins(data.aux_8) + '<br>(' + parseFloat(data.aux_8 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux9").html(convertToHoursMins(data.aux_9) + '<br>(' + parseFloat(data.aux_9 * 100 / data.staffed_time).toFixed(1) + '%)');
-				$("#tdAux1099").html(convertToHoursMins(data.aux_1099) + '<br>(' + parseFloat(data.aux_1099 * 100 / data.staffed_time).toFixed(1) + '%)');
+				$("#tdAuxtotal").html(convertToHoursMins(totalAux) + '<br><span class="text-danger">(' + parseFloat(totalAux * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux0").html(convertToHoursMins(data.aux_0) + '<br><span class="text-danger">(' + parseFloat(data.aux_0 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux1").html(convertToHoursMins(data.aux_1) + '<br><span class="text-danger">(' + parseFloat(data.aux_1 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux2").html(convertToHoursMins(data.aux_2) + '<br><span class="text-danger">(' + parseFloat(data.aux_2 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux3").html(convertToHoursMins(data.aux_3) + '<br><span class="text-danger">(' + parseFloat(data.aux_3 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux4").html(convertToHoursMins(data.aux_4) + '<br><span class="text-danger">(' + parseFloat(data.aux_4 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux5").html(convertToHoursMins(data.aux_5) + '<br><span class="text-danger">(' + parseFloat(data.aux_5 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux6").html(convertToHoursMins(data.aux_6) + '<br><span class="text-danger">(' + parseFloat(data.aux_6 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux7").html(convertToHoursMins(data.aux_7) + '<br><span class="text-danger">(' + parseFloat(data.aux_7 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux8").html(convertToHoursMins(data.aux_8) + '<br><span class="text-danger">(' + parseFloat(data.aux_8 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux9").html(convertToHoursMins(data.aux_9) + '<br><span class="text-danger">(' + parseFloat(data.aux_9 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
+				$("#tdAux1099").html(convertToHoursMins(data.aux_1099) + '<br><span class="text-danger">(' + parseFloat(data.aux_1099 * 100 / data.staffed_time).toFixed(1) + '%)</span>');
 				$("#viewDetailSingleAuxDailyRemark").val(data.remark);
 			}
 		});
