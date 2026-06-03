@@ -755,6 +755,8 @@ class Voice extends MY_Controller
 
         $data['allActiveAgent'] = $this->voice->getAllActiveAgent();
 
+        $this->form_validation->set_rules('voiceSurveyFormPeriod', 'Period', 'required');
+        $this->form_validation->set_rules('waReviewSurveyAgent', 'Agent Name', 'required|trim');
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/navbar', $data);

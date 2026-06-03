@@ -13,9 +13,9 @@ function convertToHoursMins($time, $format = '%02d:%02d:%02d') {
 function isohToBadge($isoh) {
     $out = '';
     if ($isoh == 1) {
-        $out = '<br><span class="badge badge-success py-0 px-1">OH</span>';
+        $out = '<br><span class="badge badge-success px-1">OH</span>';
     } else {
-        $out = '<br><span class="badge badge-warning py-0 px-1">OT</span>';
+        $out = '<br><span class="badge badge-warning px-1">OT</span>';
     }
     return $out;
 }

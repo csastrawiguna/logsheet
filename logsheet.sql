@@ -1192,6 +1192,7 @@ CREATE TABLE `wa_raw` (
   `sender` varchar(32) NOT NULL,
   `datetime` datetime NOT NULL,
   `message` varchar(4096) NOT NULL,
+  `response_time` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `idx_date` (`review_id`),
   KEY `idx_agent` (`message`(768))
@@ -1229,4 +1230,4 @@ CREATE TABLE `working_calendar` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 
--- 2026-06-02 15:46:28 UTC
+-- 2026-06-03 14:08:31 UTC

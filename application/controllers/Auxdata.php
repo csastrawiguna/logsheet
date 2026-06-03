@@ -142,7 +142,7 @@ class Auxdata extends MY_Controller
         $allowSelectAgent = ['1', '5', '6', '7', '9'];
 
         if(!$this->input->post('auxDailyByAgentStartPeriod') && !$this->input->post('auxDailyByAgentEndPeriod')) {
-            $data['startPeriod'] = date("Y-m-d", strtotime("-1 days"));
+            $data['startPeriod'] = date("Y-m-d", strtotime("-30 days"));
             $data['endPeriod'] = date("Y-m-d");
             $data['agent'] = $this->session->userdata('user_id');
             $data['isOh'] = ['1', '0'];
@@ -182,7 +182,7 @@ class Auxdata extends MY_Controller
         $allowSelectAgent = ['1', '5', '6', '7', '9'];
 
         if(!$this->input->post('auxDailyAllStartPeriod') && !$this->input->post('auxDailyAllEndPeriod')) {
-            $data['startPeriod'] = date("Y-m-d", strtotime("-1 days"));
+            $data['startPeriod'] = date("Y-m-d", strtotime("-7 days"));
             $data['endPeriod'] = date("Y-m-d");
         } else {
             $data['startPeriod'] = $this->input->post('auxDailyAllStartPeriod');
@@ -346,32 +346,50 @@ class Auxdata extends MY_Controller
             $numrow = 1;
             foreach ($allDataInSheet as $row) {
                 if ($numrow > 1) {
-                    // Upami kolom panyatokan kaping/tanggal kosong, luncatan
-                    if ($row['A'] == '' || $row['A'] == NULL || $row['A'] == '#VALUE!') {
-                        continue;
-                    } else {
-                        $dataUploaded[] = [
-                            'date'         => date("Y-m-d", strtotime($row['A'])),
-                            'is_oh'        => $row['R'],
-                            'agent'        => $row['B'],
-                            'ext'          => $row['D'],
-                            'staffed_time' => $row['E'],
-                            'aux_0'        => $row['F'],
-                            'aux_1'        => $row['G'],
-                            'aux_2'        => $row['H'],
-                            'aux_3'        => $row['I'],
-                            'aux_4'        => $row['J'],
-                            'aux_5'        => $row['K'],
-                            'aux_6'        => $row['L'],
-                            'aux_7'        => $row['M'],
-                            'aux_8'        => $row['N'],
-                            'aux_9'        => $row['O'],
-                            'aux_1099'     => $row['P'],
-                            'remark'       => $row['Q'],
-                            'saved_by'     => $this->session->userdata('user_id'),
-                            'saved_at'     => date("Y-m-d H:i:s")
-                        ];
+                    // 1. TRIM Sangkan euweuh karakter spasi siluman
+                    $valA = trim($row['A']);
+
+                    // 2. ANTISIPASI ERROR FORMULA EXCEL (Kawas #N/A, #VALUE!, #REF!, jsb.)
+                    // Ciri utama error formula biasana diawalan ku karakter pager (#)
+                    if (strpos($valA, '#') === 0) {
+                        $numrow++;
+                        continue; // Skip / Luncatan
                     }
+
+                    // 3. ANTISIPASI KOSONG (EMPTY / NULL)
+                    if ($valA == '' || $valA == NULL) {
+                        $numrow++;
+                        continue; // Skip / Luncatan
+                    }
+
+                    // 4. ANTISIPASI TANGGAL 1900-01-01 ATAWA TANGGAL SAKRAL LAINNA
+                    $convertedDate = date("Y-m-d", strtotime($valA));
+                    if ($convertedDate == '1900-01-01' || $convertedDate == '1970-01-01' || $valA == '1900-01-01') {
+                        $numrow++;
+                        continue; // Skip / Luncatan
+                    }
+                    
+                    $dataUploaded[] = [
+                        'date'         => date("Y-m-d", strtotime($row['A'])),
+                        'is_oh'        => $row['R'],
+                        'agent'        => $row['B'],
+                        'ext'          => $row['D'],
+                        'staffed_time' => $row['E'],
+                        'aux_0'        => $row['F'],
+                        'aux_1'        => $row['G'],
+                        'aux_2'        => $row['H'],
+                        'aux_3'        => $row['I'],
+                        'aux_4'        => $row['J'],
+                        'aux_5'        => $row['K'],
+                        'aux_6'        => $row['L'],
+                        'aux_7'        => $row['M'],
+                        'aux_8'        => $row['N'],
+                        'aux_9'        => $row['O'],
+                        'aux_1099'     => $row['P'],
+                        'remark'       => $row['Q'],
+                        'saved_by'     => $this->session->userdata('user_id'),
+                        'saved_at'     => date("Y-m-d H:i:s")
+                    ];
                 }
                 $numrow++;
             }

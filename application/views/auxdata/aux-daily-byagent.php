@@ -156,11 +156,11 @@
             <div class="modal-body">
                 <div class="form-group">
                     <div class="form-row">
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-3" style="max-width: 160px;">
                             <label for="viewDetailSingleAuxDailyAgent">Agent</label>
                             <input type="" class="form-control" id="viewDetailSingleAuxDailyAgent" value="" readonly>
                         </div>
-                        <div class="form-group col-md-2">
+                        <div class="form-group col-md-2" style="max-width: 120px;">
                             <label for="viewDetailSingleAuxDailyDate">Date</label>
                             <input type="" class="form-control" id="viewDetailSingleAuxDailyDate" value="" readonly>
                         </div>
@@ -168,22 +168,28 @@
                             <label for="viewDetailSingleAuxDailyIsoh">&nbsp;</label>
                             <span class="" id="viewDetailSingleAuxDailyIsoh"><span class="badge badge-primary badge-pill px-2 py-1">Weekday</span></span>
                         </div>
+                        <div class="form-group col-md-2">
+                        </div>
+                        <div class="form-group col-md-4 text-right">
+                            <table class="table table-bordered mb-3">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-center align-top">Staffed Time</th>
+                                        <th class="text-center align-top">Total AUX</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center" id="tdStaffedtime"></td>
+                                        <td class="text-center" id="tdAuxtotal"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <table class="table table-bordered mb-3" style="max-width: 320px;">
-                    <thead class="thead-light">
-                        <tr>
-                            <th class="text-center align-top">Staffed Time</th>
-                            <th class="text-center align-top">Total AUX</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-center" id="tdStaffedtime"></td>
-                            <td class="text-center" id="tdAuxtotal"></td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <!-- Detail breakdown AUX -->
                 <table class="table table-bordered">
                     <thead class="thead-light">
                         <tr>
@@ -229,7 +235,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                <button type="button" class="btn btn-outline-info" data-dismiss="modal"><i class="fas fa-check"></i> Done</button>
             </div>
         </div>
     </div>
