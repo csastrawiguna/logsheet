@@ -154,6 +154,7 @@ class Auxdata extends MY_Controller
         }
 
         $data['auxDailyByAgent'] = $this->aux->getAuxDailyAllByPeriodByAgent($data['startPeriod'], $data['endPeriod'], $data['agent'], $data['isOh']);
+        $data['auxDailyByAgentSummaryAll'] = $this->aux->getSummaryAuxDailyAllByPeriodByAgent($data['startPeriod'], $data['endPeriod'], $data['agent']);
         $data['allAgents'] = $this->aux->getAllActiveAgent();
 
         $this->load->view('templates/header', $data);
@@ -161,19 +162,6 @@ class Auxdata extends MY_Controller
         $this->load->view('templates/sidebar', $data);
         $this->load->view('auxdata/aux-daily-byagent', $data);
         $this->load->view('templates/footer', $data);
-    }
-
-    public function test()
-    {
-        $data['startPeriod'] = $this->input->post('auxDailyByAgentStartPeriod');
-        $data['endPeriod'] = $this->input->post('auxDailyByAgentEndPeriod');
-        $data['agent'] = $this->input->post('auxByAgentSelectAgent');
-        $data['isOh'] = $this->input->post('auxDailyByAgentIsoh');
-
-        $data['auxDailyByAgent'] = $this->aux->getAuxDailyAllByPeriodByAgent($data['startPeriod'], $data['endPeriod'], $data['agent'], $data['isOh']);
-        print_r($_POST);
-        echo "<br><br>";
-        var_dump($data['auxDailyByAgent']);
     }
 
     public function dailyall()

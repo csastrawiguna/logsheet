@@ -54,14 +54,203 @@
                             <button type="submit" class="btn btn-outline-primary" id="buttonSelectAuxDailyByAgent" name="buttonSelectAuxDailyByAgent">Go</button>
                         </div>
                     </form>
+
+                    <!-- summary AUX daily -->
+                    <p class="h5 text-indigo">Summary AUX Daily</p>
+                    <div class="row">
+                        <div class="col-sm-1" style="max-width: 36px;">
+                            <span class="badge badge-success">OH</span>
+                        </div>
+                        <div class="col-sm">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th rowspan="2" class="align-middle text-center">Staffed<br>time</th>
+                                        <th rowspan="2" class="align-middle text-center">Total<br>AUX</th>
+                                        <th colspan="11" class="align-middle text-center">AUX - OH (WEEKDAYS)</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center align-top">AUX 0<br>Hanging</th>
+                                        <th class="text-center align-top">AUX 1<br>Pray</th>
+                                        <th class="text-center align-top">AUX 2<br>Break</th>
+                                        <th class="text-center align-top">AUX 3<br>Lunch</th>
+                                        <th class="text-center align-top">AUX 4<br>Survey<br>FU</th>
+                                        <th class="text-center align-top">AUX 5<br>Callback</th>
+                                        <th class="text-center align-top">AUX 6<br>Input<br>Data</th>
+                                        <th class="text-center align-top">AUX 7<br>BO</th>
+                                        <th class="text-center align-top">AUX 8<br>WA resp.</th>
+                                        <th class="text-center align-top">AUX 9<br>Login</th>
+                                        <th class="text-center align-top">Others</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center align-top">
+                                            <?= convertToHoursMins($auxDailyByAgentSummaryAll['staffed_time_oh']) ?>
+                                        </td>
+                                        <td class="text-center align-top">
+                                            <?= convertToHoursMins($auxDailyByAgentSummaryAll['total_aux_oh']) ?>
+                                            <br>
+                                            <span class="text-danger">
+                                            (<?= number_format(($auxDailyByAgentSummaryAll['total_aux_oh'] / $auxDailyByAgentSummaryAll['staffed_time_oh']) *100, 1) ?>%)
+                                            </span>
+                                        </td>
+                                        <?php for ($x = 0; $x <= 9; $x++ ) : ?>
+                                            <td class="text-center align-top">
+                                                <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_' . $x . '_oh']) ?>
+                                                <br>
+                                                <span class="text-danger">
+                                                (<?= number_format(($auxDailyByAgentSummaryAll['aux_' . $x . '_oh'] / $auxDailyByAgentSummaryAll['staffed_time_oh']) *100, 1) ?>%)
+                                                </span>
+                                            </td>
+                                        <?php endfor; ?>
+                                        <td class="text-center align-top">
+                                            <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_1099_oh']) ?>
+                                            <br>
+                                            <span class="text-danger">
+                                            (<?= number_format(($auxDailyByAgentSummaryAll['aux_1099_oh'] / $auxDailyByAgentSummaryAll['staffed_time_oh']) *100, 1) ?>%)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-1" style="max-width: 36px;">
+                            <span class="badge badge-warning">OT</span>
+                        </div>
+                        <div class="col-sm">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th rowspan="2" class="align-middle text-center">Staffed<br>time</th>
+                                        <th rowspan="2" class="align-middle text-center">Total<br>AUX</th>
+                                        <th colspan="11" class="align-middle text-center">AUX - OVERTIME (HOLIDAYS)</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center align-top">AUX 0<br>Hanging</th>
+                                        <th class="text-center align-top">AUX 1<br>Pray</th>
+                                        <th class="text-center align-top">AUX 2<br>Break</th>
+                                        <th class="text-center align-top">AUX 3<br>Lunch</th>
+                                        <th class="text-center align-top">AUX 4<br>Survey<br>FU</th>
+                                        <th class="text-center align-top">AUX 5<br>Callback</th>
+                                        <th class="text-center align-top">AUX 6<br>Input<br>Data</th>
+                                        <th class="text-center align-top">AUX 7<br>BO</th>
+                                        <th class="text-center align-top">AUX 8<br>WA resp.</th>
+                                        <th class="text-center align-top">AUX 9<br>Login</th>
+                                        <th class="text-center align-top">Others</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center align-top">
+                                            <?= convertToHoursMins($auxDailyByAgentSummaryAll['staffed_time_ot']) ?>
+                                        </td>
+                                        <td class="text-center align-top">
+                                            <?= convertToHoursMins($auxDailyByAgentSummaryAll['total_aux_ot']) ?>
+                                            <br>
+                                            <span class="text-danger">
+                                            <?php 
+                                                $pembagiStaffedOt = $auxDailyByAgentSummaryAll['staffed_time_ot'];
+                                            ?>
+                                            (<?= $pembagiStaffedOt > 0 ? number_format(($auxDailyByAgentSummaryAll['total_aux_ot'] / $auxDailyByAgentSummaryAll['staffed_time_ot']) *100, 1) : '-'; ?>)
+                                            </span>
+                                        </td>
+                                        <?php for ($x = 0; $x <= 9; $x++ ) : ?>
+                                            <td class="text-center align-top">
+                                                <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_' . $x . '_ot']) ?>
+                                                <br>
+                                                <span class="text-danger">
+                                                (<?= $pembagiStaffedOt > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_' . $x . '_ot'] / $auxDailyByAgentSummaryAll['staffed_time_ot']) *100, 1) : '-'; ?>)
+                                                </span>
+                                            </td>
+                                        <?php endfor; ?>
+                                        <td class="text-center align-top">
+                                            <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_1099_ot']) ?>
+                                            <br>
+                                            <span class="text-danger">
+                                            (<?= $pembagiStaffedOt > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_1099_ot'] / $auxDailyByAgentSummaryAll['staffed_time_ot']) *100, 1) : '-'; ?>)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    </div>
+                    <div class="row border-bottom mb-3">
+                        <div class="col-sm-1" style="max-width: 36px;">
+                            <span class="badge badge-dark">ALL</span>
+                        </div>
+                        <div class="col-sm">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th rowspan="2" class="align-middle text-center">Staffed<br>time</th>
+                                        <th rowspan="2" class="align-middle text-center">Total<br>AUX</th>
+                                        <th colspan="11" class="align-middle text-center">AUX</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center align-top">AUX 0<br>Hanging</th>
+                                        <th class="text-center align-top">AUX 1<br>Pray</th>
+                                        <th class="text-center align-top">AUX 2<br>Break</th>
+                                        <th class="text-center align-top">AUX 3<br>Lunch</th>
+                                        <th class="text-center align-top">AUX 4<br>Survey<br>FU</th>
+                                        <th class="text-center align-top">AUX 5<br>Callback</th>
+                                        <th class="text-center align-top">AUX 6<br>Input<br>Data</th>
+                                        <th class="text-center align-top">AUX 7<br>BO</th>
+                                        <th class="text-center align-top">AUX 8<br>WA resp.</th>
+                                        <th class="text-center align-top">AUX 9<br>Login</th>
+                                        <th class="text-center align-top">Others</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center align-top">
+                                            <?= convertToHoursMins($auxDailyByAgentSummaryAll['staffed_time_all']) ?>
+                                        </td>
+                                        <td class="text-center align-top">
+                                            <?= convertToHoursMins($auxDailyByAgentSummaryAll['total_aux_all']) ?>
+                                            <br>
+                                            <span class="text-danger">
+                                            (<?= number_format(($auxDailyByAgentSummaryAll['total_aux_all'] / $auxDailyByAgentSummaryAll['staffed_time_all']) *100, 1) ?>%)
+                                            </span>
+                                        </td>
+                                        <?php for ($x = 0; $x <= 9; $x++ ) : ?>
+                                            <td class="text-center align-top">
+                                                <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_' . $x . '_all']) ?>
+                                                <br>
+                                                <span class="text-danger">
+                                                (<?= number_format(($auxDailyByAgentSummaryAll['aux_' . $x . '_all'] / $auxDailyByAgentSummaryAll['staffed_time_all']) *100, 1) ?>%)
+                                                </span>
+                                            </td>
+                                        <?php endfor; ?>
+                                        <td class="text-center align-top">
+                                            <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_1099_all']) ?>
+                                            <br>
+                                            <span class="text-danger">
+                                            (<?= number_format(($auxDailyByAgentSummaryAll['aux_1099_all'] / $auxDailyByAgentSummaryAll['staffed_time_oh']) *100, 1) ?>%)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    </div>
+
+                    <!-- tabel detail AUX per day -->
                     <?php if (count($auxDailyByAgent) < 1 ) : ?>
                         <p class="h2 text-muted text-center"><i class="far fa-dizzy"></i></p>
                         <p class="lead text-center text-muted">No Data To Be Displayed</p>
                     <?php else : ?>
+                        <p class="h5 text-indigo">Detail AUX per day</p>
                         <table id="tableAuxAgent" class="table dataTableBasic">
                             <thead>
                                 <tr class="border-top">
-                                    <th class="align-middle">Agent</th>
+                                    <th class="align-middle">#</th>
                                     <th class="align-middle">Date</th>
                                     <th class="text-right align-middle">Staffed<br>Login</th>
                                     <th class="text-right align-middle">TTL AUX</th>
@@ -77,9 +266,10 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php $i = 1; ?>
                                 <?php foreach($auxDailyByAgent as $row) : ?>
                                     <tr>
-                                        <td class="text-left"><?= $row['agent'] ?></td>
+                                        <td class="text-center"><?= $i++ ?></td>
                                         <td>
                                             <?= date("d M 'y", strtotime($row['date'])) ?>
                                             <?= isohToBadge($row['is_oh']) ?>        
@@ -200,7 +390,7 @@
                             <th class="text-center align-top">AUX 1<br>Pray</th>
                             <th class="text-center align-top">AUX 2<br>Break</th>
                             <th class="text-center align-top">AUX 3<br>Lunch</th>
-                            <th class="text-center align-top">AUX 4<br>Survey</th>
+                            <th class="text-center align-top">AUX 4<br>Survey<br>FU</th>
                             <th class="text-center align-top">AUX 5<br>Callback</th>
                             <th class="text-center align-top">AUX 6<br>Input<br>Data</th>
                             <th class="text-center align-top">AUX 7<br>BO</th>

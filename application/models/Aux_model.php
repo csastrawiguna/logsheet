@@ -86,4 +86,65 @@ class Aux_model extends CI_Model
         $this->db->insert_batch('aux_daily', $data);
         return $this->db->affected_rows();
     }
+
+    public function getSummaryAuxDailyAllByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
+    {
+        $selects = [];
+        $auxColumns = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '1099'];
+        
+        // 1. Ngitung data OH jeung OT (Ieu geus bener make AVERAGEIF / CASE WHEN)
+        $types = [
+            'oh' => 1,
+            'ot' => 0
+        ];
+
+        foreach ($types as $prefix => $val) {
+            // Tambahkeun IFNULL di luar AVG na
+            $selects[] = "IFNULL(AVG(CASE WHEN is_oh = {$val} THEN staffed_time ELSE NULL END), 0) AS staffed_time_{$prefix}";
+            
+            $sumAuxFields = [];
+            foreach ($auxColumns as $col) {
+                $aliasName = ($col == '1099') ? '1099' : $col;
+                // Tambahkeun IFNULL di dieu oge
+                $selects[] = "IFNULL(AVG(CASE WHEN is_oh = {$val} THEN aux_{$col} ELSE NULL END), 0) AS aux_{$aliasName}_{$prefix}";
+                
+                $sumAuxFields[] = "IFNULL(aux_{$col}, 0)";
+            }
+            
+            $totalAuxSql = implode(" + ", $sumAuxFields);
+            // Tambahkeun IFNULL keur total aux
+            $selects[] = "IFNULL(AVG(CASE WHEN is_oh = {$val} THEN ({$totalAuxSql}) ELSE NULL END), 0) AS total_aux_{$prefix}";
+        }
+
+        // Keur baris 'ALL' oge sarua dibungkus IFNULL:
+        $selects[] = "IFNULL(AVG(staffed_time), 0) AS staffed_time_all";
+
+        $avgAuxFieldsAll = [];
+        foreach ($auxColumns as $col) {
+            $aliasName = ($col == '1099') ? '1099' : $col;
+            $selects[] = "IFNULL(AVG(aux_{$col}), 0) AS aux_{$aliasName}_all";
+            
+            $avgAuxFieldsAll[] = "IFNULL(AVG(IFNULL(aux_{$col}, 0)), 0)";
+        }
+
+        $totalAuxSqlAll = implode(" + ", $avgAuxFieldsAll);
+        $selects[] = "({$totalAuxSqlAll}) AS total_aux_all";
+        
+        // 3. Wangun query murnina
+        $sql = "SELECT " . implode(", ", $selects) . " FROM aux_daily WHERE date BETWEEN ? AND ?";
+        $bindParams = [$startPeriod, $endPeriod];
+        
+        // 4. Kondisi filter Agent
+        if (!empty($agent) && $agent !== 'NULL') {
+            if (is_array($agent)) {
+                $agentsEscaped = array_map(function($a) { return $this->db->escape($a); }, $agent);
+                $sql .= " AND agent IN (" . implode(",", $agentsEscaped) . ")";
+            } else {
+                $sql .= " AND agent = ?";
+                $bindParams[] = $agent;
+            }
+        }
+        
+        return $this->db->query($sql, $bindParams)->row_array();
+    }
 }
