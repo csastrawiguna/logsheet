@@ -92,7 +92,8 @@
                                             <?= convertToHoursMins($auxDailyByAgentSummaryAll['total_aux_oh']) ?>
                                             <br>
                                             <span class="text-danger">
-                                            (<?= number_format(($auxDailyByAgentSummaryAll['total_aux_oh'] / $auxDailyByAgentSummaryAll['staffed_time_oh']) *100, 1) ?>%)
+                                            <?php $pembagiStaffedOh = $auxDailyByAgentSummaryAll['staffed_time_oh']; ?>
+                                                (<?= $pembagiStaffedOh > 0 ? number_format(($auxDailyByAgentSummaryAll['total_aux_oh'] / $pembagiStaffedOh) *100, 1) . '%'  : '-'; ?>)
                                             </span>
                                         </td>
                                         <?php for ($x = 0; $x <= 9; $x++ ) : ?>
@@ -100,15 +101,16 @@
                                                 <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_' . $x . '_oh']) ?>
                                                 <br>
                                                 <span class="text-danger">
-                                                (<?= number_format(($auxDailyByAgentSummaryAll['aux_' . $x . '_oh'] / $auxDailyByAgentSummaryAll['staffed_time_oh']) *100, 1) ?>%)
+                                                    (<?= $pembagiStaffedOh > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_' . $x . '_oh'] / $pembagiStaffedOh) *100, 1) . '%'  : '-'; ?>)
                                                 </span>
+                                            </span>
                                             </td>
                                         <?php endfor; ?>
                                         <td class="text-center align-top">
                                             <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_1099_oh']) ?>
                                             <br>
                                             <span class="text-danger">
-                                            (<?= number_format(($auxDailyByAgentSummaryAll['aux_1099_oh'] / $auxDailyByAgentSummaryAll['staffed_time_oh']) *100, 1) ?>%)
+                                                (<?= $pembagiStaffedOh > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_1099_oh'] / $pembagiStaffedOh) *100, 1) . '%'  : '-'; ?>)
                                             </span>
                                         </td>
                                     </tr>
@@ -152,10 +154,10 @@
                                             <?= convertToHoursMins($auxDailyByAgentSummaryAll['total_aux_ot']) ?>
                                             <br>
                                             <span class="text-danger">
-                                            <?php 
-                                                $pembagiStaffedOt = $auxDailyByAgentSummaryAll['staffed_time_ot'];
-                                            ?>
-                                            (<?= $pembagiStaffedOt > 0 ? number_format(($auxDailyByAgentSummaryAll['total_aux_ot'] / $auxDailyByAgentSummaryAll['staffed_time_ot']) *100, 1) : '-'; ?>)
+                                                <?php 
+                                                    $pembagiStaffedOt = $auxDailyByAgentSummaryAll['staffed_time_ot'];
+                                                ?>
+                                                (<?= $pembagiStaffedOt > 0 ? number_format(($auxDailyByAgentSummaryAll['total_aux_ot'] / $pembagiStaffedOt) *100, 1) . '%'  : '-'; ?>)
                                             </span>
                                         </td>
                                         <?php for ($x = 0; $x <= 9; $x++ ) : ?>
@@ -163,7 +165,7 @@
                                                 <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_' . $x . '_ot']) ?>
                                                 <br>
                                                 <span class="text-danger">
-                                                (<?= $pembagiStaffedOt > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_' . $x . '_ot'] / $auxDailyByAgentSummaryAll['staffed_time_ot']) *100, 1) : '-'; ?>)
+                                                (<?= $pembagiStaffedOt > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_' . $x . '_ot'] / $auxDailyByAgentSummaryAll['staffed_time_ot']) *100, 1) . '%'  : '-'; ?>)
                                                 </span>
                                             </td>
                                         <?php endfor; ?>
@@ -171,7 +173,7 @@
                                             <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_1099_ot']) ?>
                                             <br>
                                             <span class="text-danger">
-                                            (<?= $pembagiStaffedOt > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_1099_ot'] / $auxDailyByAgentSummaryAll['staffed_time_ot']) *100, 1) : '-'; ?>)
+                                            (<?= $pembagiStaffedOt > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_1099_ot'] / $auxDailyByAgentSummaryAll['staffed_time_ot']) *100, 1) . '%' : '-'; ?>)
                                             </span>
                                         </td>
                                     </tr>
@@ -215,7 +217,10 @@
                                             <?= convertToHoursMins($auxDailyByAgentSummaryAll['total_aux_all']) ?>
                                             <br>
                                             <span class="text-danger">
-                                            (<?= number_format(($auxDailyByAgentSummaryAll['total_aux_all'] / $auxDailyByAgentSummaryAll['staffed_time_all']) *100, 1) ?>%)
+                                                <?php 
+                                                    $pembagiStaffedAll = $auxDailyByAgentSummaryAll['staffed_time_all'];
+                                                ?>
+                                                (<?= $pembagiStaffedAll > 0 ? number_format(($auxDailyByAgentSummaryAll['total_aux_all'] / $pembagiStaffedAll) *100, 1) . '%'  : '-'; ?>)
                                             </span>
                                         </td>
                                         <?php for ($x = 0; $x <= 9; $x++ ) : ?>
@@ -223,7 +228,7 @@
                                                 <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_' . $x . '_all']) ?>
                                                 <br>
                                                 <span class="text-danger">
-                                                (<?= number_format(($auxDailyByAgentSummaryAll['aux_' . $x . '_all'] / $auxDailyByAgentSummaryAll['staffed_time_all']) *100, 1) ?>%)
+                                                    (<?= $pembagiStaffedAll > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_' . $x . '_all'] / $pembagiStaffedAll) *100, 1) . '%'  : '-'; ?>)
                                                 </span>
                                             </td>
                                         <?php endfor; ?>
@@ -231,7 +236,7 @@
                                             <?= convertToHoursMins($auxDailyByAgentSummaryAll['aux_1099_all']) ?>
                                             <br>
                                             <span class="text-danger">
-                                            (<?= number_format(($auxDailyByAgentSummaryAll['aux_1099_all'] / $auxDailyByAgentSummaryAll['staffed_time_oh']) *100, 1) ?>%)
+                                                (<?= $pembagiStaffedAll > 0 ? number_format(($auxDailyByAgentSummaryAll['aux_1099_all'] / $pembagiStaffedAll) *100, 1) . '%'  : '-'; ?>)
                                             </span>
                                         </td>
                                     </tr>

@@ -4609,9 +4609,64 @@ $(function () {
 		"paging": false
 	});
 
+	// WA REVIEW
+	// WA Reivew Survey
+	// Get current WA review score
+	$("#waReviewSurveyAgent").on("change", function(){
+		waReviewByPeriodeByAgent();
+	});
 
-	// Edit Voice Survey Result
-	// console.log(JSON.stringify(voiceData));
+	function waReviewByPeriodeByAgent() {
+		var agent = $("#waReviewSurveyAgent").val();
+		var period = $("#waReviewSurveyPeriod").val();
+		$.ajax({
+			url : baseUrl + 'voice/waReviewCurrentMonthScore',
+			data : {
+				agent : agent,
+				period : period
+			},
+			dataType : "json",
+			method : "post",
+			success : function(data) {
+				console.log(data);
+				var rslt = value2barslite(data.averageScore, data.averageScore, 15);
+				$("#waReviewSurveyLatestScore").html(rslt);
+				$("#waReviewSurveyVoiceNumber").val(parseInt(data.qty) + 1);
+			}
+		});
+	}
+
+	// Current Score on Filling WA Review
+	var waReviewInput = $("#waReviewSurveyContainer input:radio[name^='waReviewSurvey']");
+	CountWaReviewCurrentScore(waReviewInput, $("#waReviewSurveyCurrentScore"));
+
+	// Current Score on Edit WA Review
+	// var surveyEdit = $("#voiceSurveyEditContainer input:radio[name^='waReviewEdit']");
+	// voiceInfoByPeriodeByAgentOnEdit();
+	// countCurrentVoiceScoreOnClick(surveyEdit, $("#voiceSurveyEditCurrentScore"));
+
+	function CountWaReviewCurrentScore(elmt, target) {
+		var initVal = 0;
+		for (let i = 0; i < elmt.length ; ++i) {
+            if ($(elmt[i]).prop('checked')) {
+                initVal += parseInt($(elmt[i]).val());
+            }
+        }
+
+        var initRslt = value2barslite(parseFloat(initVal / 15 * 100).toFixed(1), initVal, 15);
+	    target.html(initRslt);
+
+		elmt.on("click", function(){
+			var count = 0;
+	        for (let i = 0; i < elmt.length ; ++i) {
+	            if ($(elmt[i]).prop('checked')) {
+	                count += parseInt($(elmt[i]).val());
+	            }
+	        }
+	        var rslt = value2barslite(parseFloat(count / 15 * 100).toFixed(1), count, 15);
+	        target.html(rslt);
+		});
+	}
 
 	// ----------------------------------------------------------------------------------
 

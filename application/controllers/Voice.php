@@ -754,15 +754,54 @@ class Voice extends MY_Controller
         $data['title'] = 'Filling WA Review';
 
         $data['allActiveAgent'] = $this->voice->getAllActiveAgent();
+        $data['scoreList'] = array_column($this->voice->getWaReviewScorelist(), 'score', 'level');
 
-        $this->form_validation->set_rules('voiceSurveyFormPeriod', 'Period', 'required');
+        $this->form_validation->set_rules('waReviewSurveyPeriod', 'Period', 'required');
         $this->form_validation->set_rules('waReviewSurveyAgent', 'Agent Name', 'required|trim');
+        $this->form_validation->set_rules('waReviewSurveyPhone', 'Customer Phone', 'required|trim');
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/navbar', $data);
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view('voice/wa-review-survey', $data);
-        $this->load->view('templates/footer');
+        if ($this->form_validation->run() == false) {
+            $this->load->view('templates/header', $data);
+            $this->load->view('templates/navbar', $data);
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('voice/wa-review-survey', $data);
+            $this->load->view('templates/footer');
+        } else {
+            $newData = [
+                'period' => date("Y-m-01", strtotime($this->input->post('waReviewSurveyPeriod'))),
+                'datetime' => $this->input->post('waReviewSurveyConversationDate'),
+                'agent' => $this->input->post('waReviewSurveyAgent'),
+                'ticket_number' => $this->input->post('waReviewSurveyTicket') ?: NULL,
+                'system_code' => $this->input->post('waReviewSurveySystemCode') ?: NULL,
+                'customer_phone' => $this->input->post('waReviewSurveyPhone'),
+                'score_response' => $this->input->post('waReviewSurveyResponse'),
+                'response_remark' => $this->input->post('waReviewSurveyResponseRemark') ?: NULL,
+                'score_accuracy' => $this->input->post('waReviewSurveyAccuracy'),
+                'accuracy_remark' => $this->input->post('waReviewSurveyAccuracyRemark') ?: NULL,
+                'score_wording' => $this->input->post('waReviewSurveyWording'),
+                'wording_remark' => $this->input->post('waReviewSurveyWordingRemark') ?: NULL,
+                'remark' => $this->input->post('waReviewSurveyRemark') ?: NULL,
+                'saved_by' => $this->session->userdata('user_id'),
+                'saved_at' => date("Y-m-d H:i:s"),
+            ];
+            if ($this->voice->addNewWaReview($newData)) {
+                $this->session->set_flashdata('message', 'Saved!|success|New WA reply review successly saved!');
+                redirect('voice/wareviewform');
+            }
+        }
 
+
+    }
+
+    public function waReviewCurrentMonthScore()
+    {
+        // $result = $this->voice->getWaReviewByAgentByMonth('Aliyah', '2026-06-01');
+        $result = $this->voice->getWaReviewByAgentByMonth($this->input->post('agent'), $this->input->post('period'));
+        $maxScore = (int) $this->db->get_where('wa_review_score', ['level' => 'high'])->row_array()['score'];
+        $data = [
+            'averageScore' => number_format((($result['avg_score_response'] + $result['avg_score_accuracy'] + $result['avg_score_wording']) / (3 * $maxScore)) * 100, 1),
+            'qty' => $result['qty']
+        ];
+        echo json_encode($data);
     }
 }

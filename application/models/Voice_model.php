@@ -224,4 +224,26 @@ class Voice_model extends CI_Model
         $this->db->update('voice_assesment_25f', $data);
         return $this->db->affected_rows();
     }
+
+    public function getWaReviewScorelist()
+    {
+        return $this->db->get('wa_review_score')->result_array();
+    }
+
+    public function getWaReviewByAgentByMonth($agent, $period)
+    {
+        $this->db->select('AVG(score_response) AS avg_score_response');
+        $this->db->select('AVG(score_accuracy) AS avg_score_accuracy');
+        $this->db->select('AVG(score_wording) AS avg_score_wording');
+        $this->db->select('COUNT(id) AS qty');
+        $this->db->where('agent', $agent);
+        $this->db->where('period', $period);
+        return $this->db->get('wa_review')->row_array();
+    }
+
+    public function addNewWaReview($data)
+    {
+        $this->db->insert('wa_review', $data);
+        return $this->db->insert_id();
+    }
 }

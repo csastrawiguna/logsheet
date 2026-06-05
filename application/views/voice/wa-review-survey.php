@@ -7,7 +7,7 @@
           require 'function-voice.php';
         ?>
         <div class="container-fluid pt-2 px-1">           
-            <?= form_open_multipart('voice/survey'); ?>
+            <?= form_open_multipart('voice/wareviewform'); ?>
                 <div class="row">
                     <!-- left segment : agent & period data -->
                     <div class="col-3">
@@ -32,7 +32,7 @@
                                 <div class="form-group">
                                     <label for="waReviewSurveyLatestScore" class="text-muted">Prev result</label>
                                     <div id="waReviewSurveyLatestScore">
-                                        <?= value2barstotal(0/25 * 100, 0) ?>
+                                        <?= value2barstotal(0/15 * 100, 0) ?>
                                     </div>
                                     <!-- <input type="" class="form-control text-center" id="waReviewSurveyLatestScore" value="On Dev. progress" readonly> -->
                                 </div>
@@ -43,7 +43,7 @@
                                 <div class="form-group">
                                     <label for="waReviewSurveyCurrentScore" class="text-muted">Current WA score</label>
                                     <div id="waReviewSurveyCurrentScore">
-                                        <?= value2barstotal(0/25 * 100, 0) ?>
+                                        <?= value2barstotal(0/15 * 100, 0) ?>
                                     </div>
                                     <!-- <input type="" class="form-control text-center text-primary" id="voiceSurveyCurrentScore" value="On Dev. progress" readonly> -->
                                 </div>
@@ -63,15 +63,32 @@
                                     <div class="col-sm-3" style="max-width: 240px;">
                                         <input type="datetime-local" class="form-control" name="waReviewSurveyConversationDate" id="waReviewSurveyConversationDate" value="<?= date("Y-m-d H:i") ?>" required>
                                     </div>
-                                    <label for="waReviewSurveyPhone" class="col-sm-2 col-form-label text-right" style="max-width: 80px;">Phone</label>
-                                    <div class="col-sm-3" style="max-width: 180px;">
+                                    <label for="waReviewSurveyPhone" class="col-sm-2 col-form-label text-right" style="max-width: 100px; min-width: 100px;">Phone</label>
+                                    <div class="col-sm-3" style="max-width: 200px;">
                                         <input type="" class="form-control" name="waReviewSurveyPhone" id="waReviewSurveyPhone" value="" placeholder="Telp konsumen" required>
                                     </div>
                                 </div>
                                 <div class="form-group row border-bottom pb-3 bg-light">
-                                    <label for="waReviewSurveyTicket" class="col-sm-2 col-form-label">Ticket #</label>
+                                    <label for="waReviewSurveyTicket" class="col-sm-2 col-form-label">Ticket Mendawai</label>
                                     <div class="col-sm-3" style="max-width: 240px;">
                                         <input type="" class="form-control" name="waReviewSurveyTicket" id="waReviewSurveyTicket" placeholder="No ticket jika ada">
+                                    </div>
+                                    <label for="waReviewSurveySystemCode" class="col-sm-2 col-form-label text-right" style="max-width: 124px;">System code</label>
+                                    <div class="col-sm-3" style="max-width: 240px;">
+                                        <select class="custom-select" name="waReviewSurveySystemCode" id="waReviewSurveySystemCode" >
+                                            <option value=""> - pilih system code - </option>
+                                            <option value="1a">1a</option>
+                                            <option value="1b">1b</option>
+                                            <option value="1c">1c</option>
+                                            <option value="1d">1d</option>
+                                            <option value="1e">1e</option>
+                                            <option value="2a">2a</option>
+                                            <option value="2b">2b</option>
+                                            <option value="3a">3a</option>
+                                            <option value="3b">3b</option>
+                                            <option value="3c">3c</option>
+                                            <option value="3d">3d</option>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -81,7 +98,7 @@
                                     <div class="col-sm-9">
                                         <div class="mb-2">
                                             <div class="pretty p-svg p-curve">
-                                                <input type="radio" value="3" id="waReviewSurveyResponseGood" name="waReviewSurveyResponse" />
+                                                <input type="radio" value="<?= $scoreList['high'] ?>" id="waReviewSurveyResponseGood" name="waReviewSurveyResponse" />
                                                 <div class="state p-success">
                                                     <!-- svg path -->
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
@@ -93,8 +110,8 @@
                                         </div>
                                         <div class="mb-2">
                                             <div class="pretty p-svg p-curve">
-                                                <input type="radio" value="3" id="waReviewSurveyResponseLess" name="waReviewSurveyResponse" />
-                                                <div class="state p-success">
+                                                <input type="radio" value="<?= $scoreList['medium'] ?>" id="waReviewSurveyResponseLess" name="waReviewSurveyResponse" />
+                                                <div class="state p-warning">
                                                     <!-- svg path -->
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
                                                         <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
@@ -105,7 +122,7 @@
                                         </div>
                                         <div class="mb-2">
                                             <div class="pretty p-svg p-curve">
-                                                <input type="radio" value="1" id="waReviewSurveyResponseBad" name="waReviewSurveyResponse" />
+                                                <input type="radio" value="<?= $scoreList['low'] ?>" id="waReviewSurveyResponseBad" name="waReviewSurveyResponse" />
                                                 <div class="state p-danger">
                                                     <!-- svg path -->
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
@@ -126,7 +143,7 @@
                                     <div class="col-sm-9">
                                         <div class="mb-2">
                                             <div class="pretty p-svg p-curve">
-                                                <input type="radio" value="10" id="waReviewSurveyAccuracyGood" name="waReviewSurveyAccuracy" />
+                                                <input type="radio" value="<?= $scoreList['high'] ?>" id="waReviewSurveyAccuracyGood" name="waReviewSurveyAccuracy" />
                                                 <div class="state p-success">
                                                     <!-- svg path -->
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
@@ -138,7 +155,7 @@
                                         </div>
                                         <div class="mb-2">
                                             <div class="pretty p-svg p-curve">
-                                                <input type="radio" value="5" id="waReviewSurveyAccuracyLess" name="waReviewSurveyAccuracy" />
+                                                <input type="radio" value="<?= $scoreList['medium'] ?>" id="waReviewSurveyAccuracyLess" name="waReviewSurveyAccuracy" />
                                                 <div class="state p-warning">
                                                     <!-- svg path -->
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
@@ -150,7 +167,7 @@
                                         </div>
                                         <div class="mb-2">
                                             <div class="pretty p-svg p-curve">
-                                                <input type="radio" value="1" id="waReviewSurveyAccuracyBad" name="waReviewSurveyAccuracy" />
+                                                <input type="radio" value="<?= $scoreList['low'] ?>" id="waReviewSurveyAccuracyBad" name="waReviewSurveyAccuracy" />
                                                 <div class="state p-danger">
                                                     <!-- svg path -->
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
@@ -171,37 +188,37 @@
                                     <div class="col-sm-9">
                                         <div class="mb-2">
                                             <div class="pretty p-svg p-curve">
-                                                <input type="radio" value="10" id="waReviewSurveyWordingGood" name="waReviewSurveyWording" />
+                                                <input type="radio" value="<?= $scoreList['high'] ?>" id="waReviewSurveyWordingGood" name="waReviewSurveyWording" />
                                                 <div class="state p-success">
                                                     <!-- svg path -->
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
                                                         <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
                                                     </svg>
-                                                    <label>Good / OK</label>
+                                                    <label>Good / OK<em class="text-muted">- sedikit typo masih ditolelir</em></label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="mb-2">
                                             <div class="pretty p-svg p-curve">
-                                                <input type="radio" value="5" id="waReviewSurveyWordingLess" name="waReviewSurveyWording" />
-                                                <div class="state p-primary">
+                                                <input type="radio" value="<?= $scoreList['medium'] ?>" id="waReviewSurveyWordingLess" name="waReviewSurveyWording" />
+                                                <div class="state p-warning">
                                                     <!-- svg path -->
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
                                                         <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
                                                     </svg>
-                                                    <label>Need improve <em class="text-muted">- ada smile voice tapi masih kurang</em></label>
+                                                    <label>Need improve <em class="text-muted">- kalimat ambigu</em></label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="mb-2">
                                             <div class="pretty p-svg p-curve">
-                                                <input type="radio" value="1" id="waReviewSurveyWordingBad" name="waReviewSurveyWording" />
+                                                <input type="radio" value="<?= $scoreList['low'] ?>" id="waReviewSurveyWordingBad" name="waReviewSurveyWording" />
                                                 <div class="state p-danger">
                                                     <!-- svg path -->
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
                                                         <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
                                                     </svg>
-                                                    <label>Bad <em class="text-muted">- nada tinggi, memotong pembicaraan konsumen, ekspresi melenguh, dsb.</em></label>
+                                                    <label>Bad <em class="text-muted">- kalimat asal, tidak mencerminkan layanan WA perusahaan.</em></label>
                                                 </div>
                                             </div>
                                         </div>

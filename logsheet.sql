@@ -4,12 +4,6 @@ SET NAMES utf8;
 SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 
-SET NAMES utf8mb4;
-
-DROP DATABASE IF EXISTS `logsheet`;
-CREATE DATABASE `logsheet` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci */;
-USE `logsheet`;
-
 DROP TABLE IF EXISTS `assets_headset`;
 CREATE TABLE `assets_headset` (
   `headset_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1184,11 +1178,12 @@ CREATE TABLE `vote_list` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 
+SET NAMES utf8mb4;
+
 DROP TABLE IF EXISTS `wa_raw`;
 CREATE TABLE `wa_raw` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `review_id` int(11) NOT NULL,
-  `interaction_id` varchar(24) NOT NULL,
   `sender` varchar(32) NOT NULL,
   `datetime` datetime NOT NULL,
   `message` varchar(4096) NOT NULL,
@@ -1207,17 +1202,39 @@ CREATE TABLE `wa_review` (
   `agent` varchar(32) DEFAULT NULL,
   `ticket_number` varchar(100) DEFAULT NULL,
   `system_code` varchar(2) DEFAULT NULL,
-  `customer_phone` varchar(32) DEFAULT NULL,
-  `score_response` int(11) DEFAULT 0,
-  `score_accuracy` int(11) DEFAULT 0,
-  `score_wording` int(11) DEFAULT 0,
+  `customer_phone` varchar(32) NOT NULL,
+  `score_response` int(11) NOT NULL DEFAULT 0,
+  `response_remark` varchar(256) DEFAULT NULL,
+  `score_accuracy` int(11) NOT NULL DEFAULT 0,
+  `accuracy_remark` varchar(256) DEFAULT NULL,
+  `score_wording` int(11) NOT NULL DEFAULT 0,
+  `wording_remark` varchar(256) DEFAULT NULL,
   `remark` varchar(1000) DEFAULT NULL,
-  `saved_by` varchar(32) DEFAULT NULL,
-  `saved_at` datetime DEFAULT NULL,
+  `saved_by` varchar(32) NOT NULL,
+  `saved_at` datetime NOT NULL,
   `updated_by` varchar(32) DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `period_agent` (`period`,`agent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+
+DROP TABLE IF EXISTS `wa_review_criteria`;
+CREATE TABLE `wa_review_criteria` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `min_score` decimal(10,0) NOT NULL,
+  `criteria` varchar(128) NOT NULL,
+  `remark` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+
+DROP TABLE IF EXISTS `wa_review_score`;
+CREATE TABLE `wa_review_score` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `level` varchar(32) NOT NULL,
+  `score` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
@@ -1230,4 +1247,4 @@ CREATE TABLE `working_calendar` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 
--- 2026-06-03 14:08:31 UTC
+-- 2026-06-05 16:54:50 UTC
