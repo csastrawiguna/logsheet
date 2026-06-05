@@ -384,8 +384,9 @@ class Auxdata extends MY_Controller
             
             // upload ka database via model
             if (!empty($dataUploaded)) {
-                if ($this->aux->uploadAuxDailyFromExcel($dataUploaded) > 0) {
-                    $this->session->set_flashdata('message', 'Success|success|Bulk of AUX Daily data uploaded!');
+                $nums = $this->aux->uploadAuxDailyFromExcel($dataUploaded);
+                if ($nums > 0) {
+                    $this->session->set_flashdata('message', 'Success|success|' . $nums . ' of AUX Daily data uploaded!');
                     redirect('auxdata/dailyall');
                 } else {
                     $this->session->set_flashdata('message', 'Failed|danger|Failed to upload data!');
