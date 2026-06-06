@@ -738,6 +738,16 @@ class Voice extends MY_Controller
         check_access();
         $data['title'] = 'WA Reply Review List';
 
+        if(!$this->input->post('waReviewAllStartPeriod') && !$this->input->post('waReviewAllEndPeriod')) {
+            $data['startPeriod'] = date("Y-m-d", strtotime("-7 days"));
+            $data['endPeriod'] = date("Y-m-d");
+        } else {
+            $data['startPeriod'] = $this->input->post('waReviewAllStartPeriod');
+            $data['endPeriod'] = $this->input->post('waReviewAllEndPeriod');
+        }
+
+        $data['scoreList'] = array_column($this->voice->getWaReviewScorelist(), 'score', 'level');
+        $data['waReviewList'] = $this->voice->getWaReviewByPeriodByAgent($data['startPeriod'], $data['endPeriod']);
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/navbar', $data);
@@ -784,9 +794,18 @@ class Voice extends MY_Controller
                 'saved_by' => $this->session->userdata('user_id'),
                 'saved_at' => date("Y-m-d H:i:s"),
             ];
-            if ($this->voice->addNewWaReview($newData)) {
-                $this->session->set_flashdata('message', 'Saved!|success|New WA reply review successly saved!');
-                redirect('voice/wareviewform');
+            $fileUpload = $_FILES['waReviewSurveyExcelFile'];
+            if ($fileUpload['size'] <= 0) {
+                if ($this->voice->addNewWaReview($newData) > 0 ) {
+                    $this->session->set_flashdata('message', 'Saved!|success|New WA review saved - Without chat raw!');
+                    redirect('voice/wareviewform');
+                };
+            } else {
+                $id = $this->voice->addNewWaReview($newData);
+                if ($this->waReviewUploadExcelDetail($fileUpload, $id) > 0 ) {
+                    $this->session->set_flashdata('message', 'Saved!|success|New WA review with chat raw saved!');
+                    redirect('voice/wareviewform');
+                }
             }
         }
 
@@ -803,5 +822,70 @@ class Voice extends MY_Controller
             'qty' => $result['qty']
         ];
         echo json_encode($data);
+    }
+
+    public function waReviewUploadExcelDetail($fileUpload, $id)
+    {
+        if (!empty($fileUpload['name'])) {
+            // get file extension
+            $extension = pathinfo($fileUpload['name'], PATHINFO_EXTENSION);
+
+            if ($extension == 'csv') {
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Csv');
+            } elseif ($extension == 'xlsx') {
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+            } else {
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');
+            }
+
+            // KEDAH FALSE: Supados PhpSpreadsheet kersa maca cell anu aya rumusna
+            $reader->setReadDataOnly(false);
+
+            // load file excel ti tempat saheulaanan (tmp)
+            $spreadsheet = $reader->load($fileUpload['tmp_name']);
+            // $sheet = $spreadsheet->getSheetByName('Main sheeet');
+            $sheet = $spreadsheet->getActiveSheet();
+            
+            // NGEUSIAN ARRAY SACARA MANUAL NGANGGO KALKULASI PASTI
+            $allDataInSheet = [];
+            $highestRow = $sheet->getHighestRow();
+
+            // Looping ti baris 1 dugi ka baris pangtungtungna nu aya dataan
+            for ($rowNum = 2; $rowNum <= $highestRow; $rowNum++) {
+                $allDataInSheet[] = [
+                    'A' => $sheet->getCell('A' . $rowNum)->getCalculatedValue(),
+                    'B' => $sheet->getCell('B' . $rowNum)->getCalculatedValue(),
+                    'H' => $sheet->getCell('H' . $rowNum)->getCalculatedValue(),
+                    'J' => $sheet->getCell('J' . $rowNum)->getCalculatedValue()
+                ];
+            }
+
+            // array Count
+            date_default_timezone_set('Asia/Jakarta');
+            $dataUploaded = []; 
+            $numrow = 1;
+            foreach ($allDataInSheet as $row) {
+                if ($numrow > 1) {
+                    $unix_date = ($row['A'] - 25569) * 86400;
+                    $unix_date_wib = $unix_date - 25200;
+                    $dt = date("Y-m-d H:i:s", $unix_date_wib);
+                    $dataUploaded[] = [
+                        'review_id'      => $id,
+                        'sender'         => $row['H'],
+                        'datetime'       => $dt,
+                        'message'        => $row['J'],
+                        'response_time'  => $row['B']
+                    ];
+                }
+                $numrow++;
+            }
+
+            // upload ka database via model
+            if ($this->voice->performUploadWaRaw($dataUploaded) > 0) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
     }
 }

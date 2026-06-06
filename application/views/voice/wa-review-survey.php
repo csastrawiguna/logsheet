@@ -49,6 +49,27 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Inco Scoring -->
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <span class="h6">Scoring</span>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-unbordered mb-3">
+                                    <li class="list-group-item">
+                                        <b>Good</b> <a class="float-right mr-4">: <?= $scoreList['high'] ?></a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Need improve</b> <a class="float-right mr-4">: <?= $scoreList['medium'] ?></a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Bad</b> <a class="float-right mr-4">: <?= $scoreList['low'] ?></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- right segment : survey form -->
@@ -63,7 +84,7 @@
                                     <div class="col-sm-3" style="max-width: 240px;">
                                         <input type="datetime-local" class="form-control" name="waReviewSurveyConversationDate" id="waReviewSurveyConversationDate" value="<?= date("Y-m-d H:i") ?>" required>
                                     </div>
-                                    <label for="waReviewSurveyPhone" class="col-sm-2 col-form-label text-right" style="max-width: 100px; min-width: 100px;">Phone</label>
+                                    <label for="waReviewSurveyPhone" class="col-sm-2 col-form-label text-right" style="max-width: 124px; min-width: 120px;">Phone</label>
                                     <div class="col-sm-3" style="max-width: 200px;">
                                         <input type="" class="form-control" name="waReviewSurveyPhone" id="waReviewSurveyPhone" value="" placeholder="Telp konsumen" required>
                                     </div>
@@ -84,10 +105,20 @@
                                             <option value="1e">1e</option>
                                             <option value="2a">2a</option>
                                             <option value="2b">2b</option>
-                                            <option value="3a">3a</option>
+                                            <option value="3a">3a / 3m / 3q</option>
                                             <option value="3b">3b</option>
                                             <option value="3c">3c</option>
                                             <option value="3d">3d</option>
+                                            <option value="3e">3e</option>
+                                            <option value="3f">3f / 3h / 3i</option>
+                                            <option value="3j">3j</option>
+                                            <option value="3k">3k</option>
+                                            <option value="4a">4a</option>
+                                            <option value="4b">4b</option>
+                                            <option value="5a">5a/5b/5c/5d</option>
+                                            <option value="5e">5e</option>
+                                            <option value="6a">6a</option>
+                                            <option value="7a">7a / 7b / 7c</option>
                                         </select>
                                     </div>
                                 </div>
@@ -161,7 +192,7 @@
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
                                                         <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
                                                     </svg>
-                                                    <label>Not good enouch <em class="text-muted">- info kurang lengkap, tidak info cashless, biaya servis dsb.</em></label>
+                                                    <label>Need improve <em class="text-muted">- info kurang lengkap, tidak info cashless, biaya servis dsb.</em></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -243,7 +274,7 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save data</button>
                                 <button type="reset" class="btn btn-warning"><i class="fas fa-undo"></i> Reset form</button>
-                                <a href="<?= base_url('voice/index') ?>">
+                                <a href="<?= base_url('voice/wareviewlist') ?>">
                                     <button type="button" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Cancel</button>
                                 </a>
                             </div>

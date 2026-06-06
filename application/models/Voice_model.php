@@ -246,4 +246,20 @@ class Voice_model extends CI_Model
         $this->db->insert('wa_review', $data);
         return $this->db->insert_id();
     }
+
+    public function performUploadWaRaw($data)
+    {
+        $this->db->insert_batch('wa_raw', $data);
+        return $this->db->affected_rows();
+    }
+
+    public function getWaReviewByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
+    {
+        if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
+            $this->db->where_in('agent', $agent);
+        }
+        $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") >= ', $startPeriod);
+        $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") <= ', $endPeriod);
+        return $this->db->get('wa_review')->result_array();
+    }
 }
