@@ -5,6 +5,8 @@
         <div class="flashmessage" style="display: none;"><?= $this->session->flashdata('message'); ?></div>
         <?php 
           require 'function-voice.php';
+          $maxScore = (int)$scoreList['high'] * 3;
+          $allowedAccess = in_array($this->session->userdata('role_access'), ['1', '5', '7', '9'])
         ?>
         <div class="container-fluid pt-2 px-1">
             <div class="card">
@@ -31,14 +33,14 @@
                     </form>
                     <div class="border mb-3"></div>
                     <table class="table table-bordered dataTableBasic">
-                        <thead>
+                        <thead class="thead-light">
                             <tr>
                                 <th rowspan="2" class="align-middle">#</th>
                                 <th rowspan="2" class="align-middle">Period</th>
                                 <th rowspan="2" class="align-middle">Agent</th>
                                 <th rowspan="2" class="align-middle">Datetime</th>
                                 <th rowspan="2" class="align-middle">Cust. Phone</th>
-                                <th colspan="4" class="align-middle">Review</th>
+                                <th colspan="4" class="align-middle text-center">Review</th>
                                 <th rowspan="2" class="align-middle">Remark</th>
                                 <th rowspan="2" class="align-middle">...</th>
                             </tr>
@@ -46,7 +48,7 @@
                                 <th>Response</th>
                                 <th>Accuracy</th>
                                 <th>Wording</th>
-                                <th>Score</th>
+                                <th class="text-center">Score</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,29 +57,45 @@
                                 <tr>
                                     <td><?= $i++; ?></td>
                                     <td><?= date("M Y", strtotime($row['period'])); ?></td>
-                                    <td><?= $row['agent'] ?></td>
+                                    <td class="bg-light text-bold"><?= $row['agent'] ?></td>
                                     <td>
                                         <?= date("d M Y", strtotime($row['datetime'])) ?>
-                                        <br>        
+                                        <br>
+                                        <?= date("H:i", strtotime($row['datetime'])) ?>
                                     </td>
-                                    <td><?= $row['customer_phone'] ?></td>
-                                    <td>
-                                        <?= $row['score_response'] ?>
-                                    </td>
-                                    <td>
-                                        <?= $row['score_accuracy'] ?>
-                                    </td>
-                                    <td>
-                                        <?= $row['score_wording'] ?>
+                                    <td class="">
+                                        <?= $row['customer_phone'] ?>
+                                        <br>
+                                        <span class="badge badge-secondary font-weight-normal"><?= $row['system_code'] ?></span>
                                     </td>
                                     <td>
-                                        <?= number_format(($row['score_response'] + $row['score_accuracy'] + $row['score_wording']) / 15 * 100, 1) ?>
+                                        <?= itemScoreToColor($row['score_response']) ?>
+                                        <br>
+                                        <span class="text-small"><?= $row['response_remark'] ?></span>
+                                    </td>
+                                    <td>
+                                        <?= itemScoreToColor($row['score_accuracy']) ?>
+                                        <br>
+                                        <span class="text-small"><?= $row['accuracy_remark'] ?></span>
+                                    </td>
+                                    <td>
+                                        <?= itemScoreToColor($row['score_wording']) ?>
+                                        <br>
+                                        <span class="text-small"><?= $row['wording_remark'] ?></span>
+                                    </td>
+                                    <td class="text-center bg-light">
+                                        <span class="text-bold text-primary"><?= number_format(($row['score_response'] + $row['score_accuracy'] + $row['score_wording']) / $maxScore * 100, 1) ?></span>
                                     </td>
                                     <td>
                                         <?= $row['remark'] ?>
                                     </td>
                                     <td>
-                                        ...
+                                        <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewDetail"><i class="fas fa-search text-info"></i></a> 
+                                        <?php if ($allowedAccess) : ?>
+                                            <br>
+                                            <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewEdit"><i class="fas fa-edit text-secondary"></i></a>  &nbsp; 
+                                            <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewDelete"><i class="fas fa-times text-danger"></i></a> 
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

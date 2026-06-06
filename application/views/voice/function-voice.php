@@ -139,3 +139,15 @@ function checkedTag($data, $ref) {
 	$data == $ref ? $out = 'checked' : $out = '';
 	return $out;
 }
+
+function itemScoreToColor($val)
+{
+	if ($val == 5) {
+		$out = '<span class="badge badge-pill badge-success">Good (' . $val . ')</span>';
+	} else if ($val == 3) {
+		$out = '<span class="badge badge-pill badge-warning">Need improve (' . $val . ')</span>';
+	} else{
+		$out = '<span class="badge badge-pill badge-danger">Bad (' . $val . ')</span>';
+	}
+	return $out;
+}
