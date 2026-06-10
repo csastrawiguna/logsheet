@@ -77,6 +77,17 @@
                         <div class="card" id="waReviewSurveyContainer">
                             <div class="card-header bg-primary">
                                 WA Review Items
+                                <div class="card-tools">
+                                    <div class="btn-group mr-2">
+                                        <a type="button" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-file-alt"></i> Format upload
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right" style="min-width: 200px;">
+                                            <a class="dropdown-item" href="<?= base_url('files/Format_Count_Response_Time_WA_no_adjustment.xlsx') ?>"><i class=" fas fa-file-excel"></i> Normal Mendawai time</a>
+                                            <a class="dropdown-item" href="<?= base_url('files/Format_Count_Response_Time_WA_GMT7.xlsx') ?>"><i class="far fa-file-code"></i> Adjust GMT+7 time</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="form-group row bg-light">
