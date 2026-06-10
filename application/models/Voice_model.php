@@ -262,4 +262,11 @@ class Voice_model extends CI_Model
         $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") <= ', $endPeriod);
         return $this->db->get('wa_review')->result_array();
     }
+
+    public function getDetailWaById($id)
+    {
+        $this->db->where('review_id', $id);
+        $this->db->order_by('datetime', 'ASC');
+        return $this->db->get('wa_raw')->result_array();
+    }
 }

@@ -80,22 +80,22 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-group row bg-light">
-                                    <label for="waReviewSurveyConversationDate" class="col-sm-2 col-form-label">Conversation date</label>
-                                    <div class="col-sm-3" style="max-width: 240px;">
+                                    <label for="waReviewSurveyConversationDate" class="col-sm-2 col-form-label" style="min-width: 120px;">Conversation date</label>
+                                    <div class="col-sm-3" style="max-width: 240px; min-width: 238px;">
                                         <input type="datetime-local" class="form-control" name="waReviewSurveyConversationDate" id="waReviewSurveyConversationDate" value="<?= date("Y-m-d H:i") ?>" required>
                                     </div>
                                     <label for="waReviewSurveyPhone" class="col-sm-2 col-form-label text-right" style="max-width: 124px; min-width: 120px;">Phone</label>
-                                    <div class="col-sm-3" style="max-width: 200px;">
+                                    <div class="col-sm-3" style="min-width: 220px; max-width: 240px;">
                                         <input type="" class="form-control" name="waReviewSurveyPhone" id="waReviewSurveyPhone" value="" placeholder="Telp konsumen" required>
                                     </div>
                                 </div>
                                 <div class="form-group row border-bottom pb-3 bg-light">
-                                    <label for="waReviewSurveyTicket" class="col-sm-2 col-form-label">Ticket Mendawai</label>
-                                    <div class="col-sm-3" style="max-width: 240px;">
+                                    <label for="waReviewSurveyTicket" class="col-sm-2 col-form-label" style="min-width: 120px;">Ticket</label>
+                                    <div class="col-sm-3" style="max-width: 240px; min-width: 238px;">
                                         <input type="" class="form-control" name="waReviewSurveyTicket" id="waReviewSurveyTicket" placeholder="No ticket jika ada">
                                     </div>
                                     <label for="waReviewSurveySystemCode" class="col-sm-2 col-form-label text-right" style="max-width: 124px;">System code</label>
-                                    <div class="col-sm-3" style="max-width: 240px;">
+                                    <div class="col-sm-3" style="min-width: 220px; max-width: 240px;">
                                         <select class="custom-select" name="waReviewSurveySystemCode" id="waReviewSurveySystemCode" >
                                             <option value=""> - pilih system code - </option>
                                             <option value="1a">1a</option>

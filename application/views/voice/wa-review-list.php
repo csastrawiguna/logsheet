@@ -90,7 +90,8 @@
                                         <?= $row['remark'] ?>
                                     </td>
                                     <td>
-                                        <a href="#" data-id="<?= $row['id'] ?>" data-agent="<?= $row['agent'] ?>" data-datetime="<?= $row['datetime'] ?>" class="buttonWaReviewViewDetail" data-toggle="modal" data-target="#modalWaReviewDetaiChatModal"><i class="fas fa-search text-info"></i></a> 
+                                        <a href="#" data-id="<?= $row['id'] ?>" data-agent="<?= $row['agent'] ?>" data-datetime="<?= $row['datetime'] ?>" data-customerphone="<?= $row['customer_phone'] ?>" class="buttonWaReviewViewDetail" data-toggle="modal" data-target="#modalWaReviewDetaiChatModal">  <i class="fas fa-search text-info"></i>
+                                        </a> 
                                         <?php if ($allowedAccess) : ?>
                                             <br>
                                             <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewEdit"><i class="fas fa-edit text-secondary"></i></a>  &nbsp; 
@@ -112,7 +113,7 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document" style="min-width: 900px;">
         <div class="modal-content">
             <div class="modal-header bg-light">
-                <h5 class="modal-title" id="modalWaReviewDetaiChatModal">Agent's Chat</h5>
+                <h5 class="modal-title" id="modalWaReviewDetaiChatModalLabel">Agent's Chat</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -124,89 +125,19 @@
                     <!-- Header Dashboard -->
                     <div class="p-3 text-white flex-shrink-0" style="background: linear-gradient(135deg, #dc2626, #ef4444); border-bottom: 1px solid rgba(0,0,0,0.1);">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="m-0 font-weight-bold" style="letter-spacing: 0.5px;">Agent Chat View</h6>
-                            <span class="badge badge-dark font-weight-normal px-2 py-1" style="font-size: 11px; background-color: rgba(0,0,0,0.25);">Review ID: 7</span>
-                        </div>
-                        <div class="small text-white-50 d-flex align-items-center mt-1">
-                            <span class="d-inline-block bg-success rounded-circle mr-2" style="width: 8px; height: 8px;"></span>
-                            Chatting with: Bapak Darmady
+                            <h6 id="detailWaChatCustomerName" class="m-0 font-weight-bold" style="letter-spacing: 0.5px;">Agent Chat View</h6>
+                            <span id="detailWaChatDatetime" class="badge badge-dark font-weight-normal px-2 py-1" style="font-size: 14px; background-color: rgba(0,0,0,0.25);">---</span>
                         </div>
                     </div>
 
                     <!-- Chat History Area -->
-                    <div class="flex-grow-1 p-3 overflow-auto d-flex flex-column" style="background-color: #f0f2f5; gap: 14px;">
-                        
-                        <!-- Customer: Awal Chat -->
-                        <div class="d-flex flex-column align-items-start w-100">
-                            <small class="text-secondary font-weight-bold ml-1 mb-1" style="font-size: 11px;">👤 Customer</small>
-                            <div class="p-2 text-dark shadow-sm border" style="background-color: #d9fdd3; border-radius: 0px 8px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #c0edb9 !important;">
-                                Ini kulkas saya ngga dingin ya
-                            </div>
-                            <small class="text-muted ml-1 mt-1" style="font-size: 10px;">11:02:01</small>
-                        </div>
-
-                        <!-- Bot Response (Pihak Agent/Sistem - Katuhu) -->
-                        <div class="d-flex flex-column align-items-end w-100">
-                            <small class="text-secondary font-weight-bold mr-1 mb-1" style="font-size: 11px;">🤖 System Bot</small>
-                            <div class="p-2 text-dark bg-white shadow-sm border" style="border-radius: 8px 0px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #e9edef !important;">
-                                Selamat pagi Bapak. Silakan pilih menu layanan di bawah ini...
-                            </div>
-                            <small class="text-muted mr-1 mt-1" style="font-size: 10px;">11:02:01</small>
-                        </div>
-
-                        <!-- System Alert -->
-                        <div class="d-flex justify-content-center my-1 w-100">
-                            <div class="alert alert-primary py-2 px-3 text-center shadow-sm m-0" style="max-w: 90%; font-size: 12px; border-radius: 8px; border: none; background-color: #007bff; color: white;">
-                                ⚙️ <b>Sistem:</b> Halo, Anda sudah terhubung dengan Agent Livechat SHARP.
-                            </div>
-                        </div>
-
-                        <!-- Customer: Mengulang Keluhan -->
-                        <div class="d-flex flex-column align-items-start w-100">
-                            <div class="p-2 text-dark shadow-sm border" style="background-color: #d9fdd3; border-radius: 0px 8px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #c0edb9 !important;">
-                                Ini kulkas saya tidak dingin ya
-                            </div>
-                            <small class="text-muted ml-1 mt-1" style="font-size: 10px;">11:03:49</small>
-                        </div>
-
-                        <!-- Response Time Label -->
-                        <div class="d-flex justify-content-center my-1 w-100">
-                            <span class="badge badge-warning text-dark border px-3 py-1 font-weight-normal shadow-sm" style="font-size: 11px; border-radius: 20px; background-color: #fffbeb; border-color: #fde68a !important;">
-                                ⏱️ Anjeun merespon dina 41 menit
-                            </span>
-                        </div>
-
-                        <!-- Agent (Anjeun/Tantri - Katuhu) -->
-                        <div class="d-flex flex-column align-items-end w-100">
-                            <small class="text-danger font-weight-bold mr-1 mb-1" style="font-size: 11px;">👩‍💼 Anjeun (Tantri)</small>
-                            <div class="p-2 text-dark shadow-sm border" style="background-color: #e2f0fd; border-radius: 8px 0px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #cfe2fe !important;">
-                                Terima kasih telah menggunakan layanan WhatsApp SHARP. Selamat siang, saya Tantri...
-                            </div>
-                            <small class="text-muted mr-1 mt-1" style="font-size: 10px;">11:45:16</small>
-                        </div>
-
-                        <!-- Agent (Anjeun/Tantri - Katuhu) -->
-                        <div class="d-flex flex-column align-items-end w-100">
-                            <div class="p-2 text-dark shadow-sm border" style="background-color: #e2f0fd; border-radius: 8px 0px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #cfe2fe !important;">
-                                Baik Bapak Darmady untuk memastikan kendalanya, mangga turutan léngkah ieu...
-                            </div>
-                            <small class="text-muted mr-1 mt-1" style="font-size: 10px;">11:45:31</small>
-                        </div>
-
-                        <!-- Customer: Satuju -->
-                        <div class="d-flex flex-column align-items-start w-100">
-                            <div class="p-2 text-dark shadow-sm border" style="background-color: #d9fdd3; border-radius: 0px 8px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #c0edb9 !important;">
-                                Ok bu nanti saya coba laksanakan saran dari ibu dulu
-                            </div>
-                            <small class="text-muted ml-1 mt-1" style="font-size: 10px;">11:46:56</small>
-                        </div>
-
+                    <div id="detailWaChatConversation" class="flex-grow-1 p-3 overflow-auto d-flex flex-column" style="background-color: #f0f2f5; gap: 14px;">
                     </div>
 
                     <!-- Footer Status -->
                     <div class="p-2 bg-light border-top flex-shrink-0">
                         <div class="w-100 text-center py-2 text-secondary font-weight-bold bg-white rounded border" style="font-size: 11px; border-color: #dee2e6 !important;">
-                            🔒 History Chat Review ID #7 Closed
+                            🔒 History Chat
                         </div>
                     </div>
                 </div>
@@ -217,18 +148,3 @@
         </div>
     </div>
 </div>
-
-<!-- buat chat -->
-<!-- <?php 
-// Conto logika kondisional dina jero loop PHP/Blade
-if ($row->sender == 'customer') {
-    $alignment = 'align-items-start'; // Rata kenca
-    $bgColor = '#d9fdd3';             // Warna hejo WA
-    $senderName = '👤 Customer';
-    $borderRadius = 'border-radius: 0px 8px 8px 8px;';
-} else {
-    $alignment = 'align-items-end';   // Rata katuhu (Agent / Bot)
-    $senderName = ($row->sender == 'agent') ? '👩‍💼 Anjeun (Tantri)' : '🤖 System Bot';
-    $bgColor = ($row->sender == 'agent') ? '#e2f0fd' : '#ffffff'; // Biru keur agent, bodas keur bot
-    $borderRadius = 'border-radius: 8px 0px 8px 8px;';
-} ?> -->

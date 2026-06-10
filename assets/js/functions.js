@@ -4611,6 +4611,22 @@ $(function () {
 
 	// WA REVIEW
 	// WA Reivew Survey
+	// input period automatic by conversation date
+	$('#waReviewSurveyConversationDate').on('change input', function() {
+        var datetimeVal = $(this).val(); // Hasilna: YYYY-MM-DDTHH:mm
+        if (datetimeVal) {
+            // Sabet bagian taun sarta bulanna hungkul (7 karakter mimiti: YYYY-MM)
+            var tahunBulan = datetimeVal.substring(0, 7); 
+            // Gabungkeun sareng tanggal 01 keur periodena
+            var formatPeriode = tahunBulan + '-01'; 
+            // Set value ka input periode review survey
+            $('#waReviewSurveyPeriod').val(formatPeriode);
+        } else {
+            // Upami input kahiji dikosongkeun, input kadua milu kosong
+            $('#waReviewSurveyPeriod').val('');
+        }
+    });
+
 	// Get current WA review score
 	$("#waReviewSurveyAgent").on("change", function(){
 		waReviewByPeriodeByAgent();
@@ -4666,6 +4682,126 @@ $(function () {
 	        var rslt = value2barslite(parseFloat(count / 15 * 100).toFixed(1), count, 15);
 	        target.html(rslt);
 		});
+	}
+
+	// view detail chat
+	$(".container-fluid").on("click", ".buttonWaReviewViewDetail", function(e) {
+		e.preventDefault();
+		var id = this.dataset.id;
+		var customerPhone = this.dataset.customerphone;
+		var dt = formatTanggalChat(this.dataset.datetime);
+		var agentName = formatTanggalChat(this.dataset.agent);
+		$.ajax({
+			url: baseUrl + 'voice/wareviewdetailchat',
+			data : {
+				id : id
+			},
+			method : "post",
+			dataType : "json",
+			success : function(data) {
+				var phoneNumberLabel = "Customer's phone: " + customerPhone;
+				$("#detailWaChatCustomerName").html(phoneNumberLabel);
+				$("#detailWaChatDatetime").html(dt);
+				
+				var chatHtml = '';
+				var lastSender = '';
+
+	            // Looping ngolah data JSON jadi HTML
+	            $.each(data, function(index, chat) {
+	                // 1. Convert format tanggal asli Mang (chat.datetime)
+	                var tanggalTampil = formatTanggalChat(chat.datetime);
+	                
+	                // 2. Logika Otomatis show_name:
+	                // Lamun sender ayeuna BÉDA jeung sender saencana, mangka munculkeun ngaran (true)
+	                var showName = (chat.sender !== lastSender);
+	                
+	                // Simpen sender ayeuna keur babandingan di loop salajengna
+	                lastSender = chat.sender; 
+
+	                // =======================================================
+	                // TAMPILAN 1: SENDER CUSTOMER (Kénca - Kelir Héjo)
+	                // =======================================================
+	                if (chat.sender === 'customer') {
+	                    chatHtml += '<div class="d-flex flex-column align-items-start w-100">';
+	                    if (showName) {
+	                        chatHtml += '    <small class="text-secondary font-weight-bold ml-1 mb-1" style="font-size: 11px;">👤 Customer</small>';
+	                    }
+	                    chatHtml += '    <div class="p-2 text-dark shadow-sm border" style="background-color: #d9fdd3; border-radius: 0px 8px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #c0edb9 !important;">';
+	                    chatHtml += '        ' + chat.message;
+	                    chatHtml += '    </div>';
+	                    chatHtml += '    <small class="text-muted ml-1 mt-1" style="font-size: 10px;">' + tanggalTampil + '</small>';
+	                    chatHtml += '</div>';
+	                }
+	                
+	                // =======================================================
+	                // TAMPILAN 2: SENDER BOT (Katuhu - Kelir Bodas)
+	                // =======================================================
+	                else if (chat.sender === 'bot') {
+	                    chatHtml += '<div class="d-flex flex-column align-items-end w-100">';
+	                    if (showName) {
+	                        chatHtml += '    <small class="text-secondary font-weight-bold mr-1 mb-1" style="font-size: 11px;">🤖 System Bot</small>';
+	                    }
+	                    chatHtml += '    <div class="p-2 text-dark bg-white shadow-sm border" style="border-radius: 8px 0px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #e9edef !important;">';
+	                    chatHtml += '        ' + chat.message;
+	                    chatHtml += '    </div>';
+	                    chatHtml += '    <small class="text-muted mr-1 mt-1" style="font-size: 10px;">' + tanggalTampil + '</small>';
+	                    chatHtml += '</div>';
+	                }
+	                
+	                // =======================================================
+	                // TAMPILAN 3: SENDER AGENT / ANJEUN (Katuhu - Kelir Biru Ngora)
+	                // =======================================================
+	                else if (chat.sender === 'agent') {
+	                    chatHtml += '<div class="d-flex flex-column align-items-end w-100">';
+	                    if (showName) {
+	                        chatHtml += '    <small class="text-danger font-weight-bold mr-1 mb-1" style="font-size: 11px;">👩‍💼 Agent (' + agentName + ')</small>';
+	                    }
+	                    chatHtml += '    <div class="p-2 text-dark shadow-sm border" style="background-color: #e2f0fd; border-radius: 8px 0px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #cfe2fe !important;">';
+	                    chatHtml += '        ' + chat.message;
+	                    chatHtml += '    </div>';
+	                    chatHtml += '    <small class="text-muted mr-1 mt-1" style="font-size: 10px;">' + tanggalTampil + '</small>';
+	                    chatHtml += '</div>';
+	                }
+	                
+	                // *Catetan: Upami Mang miboga tipe data 'system_alert' atanapi 'response_time' dina kolom sender,
+	                // kantun tambihan baé logika 'else if (chat.sender === "system_alert")' di handapna luyu jeung conto kamari.
+	                
+	            });
+
+	            // Lebuskeun HTML na ka jero wadah utama bagean chat
+	            $('#detailWaChatConversation').html(chatHtml);
+	            
+	            // Otomatis scroll ka bagean panghandapna sangkan chat anyar katingali langsung
+	            // var container = $('#detailWaChatConversation');
+	            // container.scrollTop(container[0].scrollHeight);
+	        },
+	        error: function(xhr, status, error) {
+	            console.error("Aduh, aya masalah pas nyokot data chat: ", error);
+	        }
+		})
+	});
+	
+	// Helper datetime chat
+	function formatTanggalChat(stringTanggal) {
+	    if (!stringTanggal) return '';
+
+	    // Ganti spasi ku 'T' supados aman di-parse ku sadaya browser
+	    var formatAman = stringTanggal.replace(' ', 'T');
+	    var d = new Date(formatAman);
+
+	    // Upami lain format tanggal anu sah, balikkeun string aslina
+	    if (isNaN(d.getTime())) return stringTanggal;
+
+	    var namaBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+	    var tanggal = String(d.getDate()).padStart(2, '0');
+	    var bulan   = namaBulan[d.getMonth()];
+	    var tahun   = d.getFullYear();
+	    var jam     = String(d.getHours()).padStart(2, '0');
+	    var menit   = String(d.getMinutes()).padStart(2, '0');
+
+	    // Hasil ahir: 06 Jun 2026 17:49
+	    return tanggal + ' ' + bulan + ' ' + tahun + ' ' + jam + ':' + menit;
 	}
 
 	// ----------------------------------------------------------------------------------

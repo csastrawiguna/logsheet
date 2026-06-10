@@ -808,8 +808,6 @@ class Voice extends MY_Controller
                 }
             }
         }
-
-
     }
 
     public function waReviewCurrentMonthScore()
@@ -827,7 +825,7 @@ class Voice extends MY_Controller
     public function waReviewUploadExcelDetail($fileUpload, $id)
     {
         if (!empty($fileUpload['name'])) {
-            // get file extension
+            // 1. Get file extension
             $extension = pathinfo($fileUpload['name'], PATHINFO_EXTENSION);
 
             if ($extension == 'csv') {
@@ -838,54 +836,76 @@ class Voice extends MY_Controller
                 $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');
             }
 
-            // KEDAH FALSE: Supados PhpSpreadsheet kersa maca cell anu aya rumusna
+            // Supados PhpSpreadsheet kersa maca cell anu aya rumusna
             $reader->setReadDataOnly(false);
 
-            // load file excel ti tempat saheulaanan (tmp)
+            // Load file excel ti tmp
             $spreadsheet = $reader->load($fileUpload['tmp_name']);
-            // $sheet = $spreadsheet->getSheetByName('Main sheeet');
             $sheet = $spreadsheet->getActiveSheet();
             
-            // NGEUSIAN ARRAY SACARA MANUAL NGANGGO KALKULASI PASTI
-            $allDataInSheet = [];
             $highestRow = $sheet->getHighestRow();
+            $dataUploaded = []; 
+            
+            date_default_timezone_set('Asia/Jakarta');
 
-            // Looping ti baris 1 dugi ka baris pangtungtungna nu aya dataan
+            // Looping ti baris 2 (sanggeus header) dugi ka baris pangtungtungna
             for ($rowNum = 2; $rowNum <= $highestRow; $rowNum++) {
-                $allDataInSheet[] = [
-                    'A' => $sheet->getCell('A' . $rowNum)->getCalculatedValue(),
-                    'B' => $sheet->getCell('B' . $rowNum)->getCalculatedValue(),
-                    'H' => $sheet->getCell('H' . $rowNum)->getCalculatedValue(),
-                    'J' => $sheet->getCell('J' . $rowNum)->getCalculatedValue()
+                
+                // Cokot nilai nilat tiap kolom
+                $valA = $sheet->getCell('A' . $rowNum)->getCalculatedValue();
+                $valB = $sheet->getCell('B' . $rowNum)->getCalculatedValue();
+                $valH = $sheet->getCell('H' . $rowNum)->getCalculatedValue();
+                $valJ = $sheet->getCell('J' . $rowNum)->getCalculatedValue();
+
+                // ==================================================================
+                // PROSES SARINGAN (VALIDASI) - DIEU LOGIKANA, MANG!
+                // ==================================================================
+                // Skip upami:
+                // - Kolom A kosong, ATAWA boga nilai error bawaan Excel (kawas #VALUE!, #N/A, jsb)
+                // - ATAWA Kolom H (sender) kosong/mung spasi hungkul
+                // - ATAWA Kolom J (message) kosong/mung spasi hungkul
+                if (
+                    empty($valA) || strpos(strval($valA), '#') === 0 || 
+                    trim($valH) === '' || 
+                    trim($valJ) === ''
+                ) {
+                    continue; // Luncat, ulah diprosés, langsung beralih ka baris salajengna!
+                }
+                // ==================================================================
+
+                // Prosés konversi tanggal Excel ka format DB MySQL
+                // (Excel ngetang poe ti taun 1900, matak dikirangan 25569)
+                $unix_date = ($valA - 25569) * 86400;
+                $unix_date_wib = $unix_date - 25200; // Saluyukeun zona waktu WIB
+                $dt = date("Y-m-d H:i:s", $unix_date_wib);
+
+                // Masukkeun data anu tos LULUS sensor langsung kana array utama
+                $dataUploaded[] = [
+                    'review_id'    => $id,
+                    'sender'       => trim($valH),
+                    'datetime'     => $dt,
+                    'message'      => trim($valJ),
+                    'response_time'=> $valB
                 ];
             }
 
-            // array Count
-            date_default_timezone_set('Asia/Jakarta');
-            $dataUploaded = []; 
-            $numrow = 1;
-            foreach ($allDataInSheet as $row) {
-                if ($numrow > 1) {
-                    $unix_date = ($row['A'] - 25569) * 86400;
-                    $unix_date_wib = $unix_date - 25200;
-                    $dt = date("Y-m-d H:i:s", $unix_date_wib);
-                    $dataUploaded[] = [
-                        'review_id'      => $id,
-                        'sender'         => $row['H'],
-                        'datetime'       => $dt,
-                        'message'        => $row['J'],
-                        'response_time'  => $row['B']
-                    ];
-                }
-                $numrow++;
+            // Upami saatos disaring tétéla teu aya data anu lulus sensor, ulah nembak DB
+            if (empty($dataUploaded)) {
+                return 0; 
             }
 
-            // upload ka database via model
+            // Upload ka database via model sacara borongan (Batch)
             if ($this->voice->performUploadWaRaw($dataUploaded) > 0) {
                 return 1;
             } else {
                 return 0;
             }
         }
+    }
+
+    public function wareviewdetailchat()
+    {
+        $reviewId = $this->input->post('id');
+        echo json_encode($this->voice->getDetailWaById($reviewId));
     }
 }
