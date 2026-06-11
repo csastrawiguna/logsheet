@@ -5,6 +5,7 @@
         <div class="flashmessage" style="display: none;"><?= $this->session->flashdata('message'); ?></div>
         <?php 
           require 'function-voice.php';
+          $maxScore = (int)$scoreList['high'] * 3;
         ?>
         <div class="container-fluid pt-2 px-1">           
             <?= form_open_multipart('voice/wareviewform'); ?>
@@ -17,11 +18,11 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label for="waReviewSurveyPeriod" class="text-muted">Period (month)</label>
+                                    <label for="waReviewSurveyPeriod">Period (month)</label>
                                     <input type="date" class="form-control text-center" id="waReviewSurveyPeriod" name="waReviewSurveyPeriod" value="<?= date("Y-m-01"); ?>" style="padding-left: 40px;">
                                 </div>
                                 <div class="form-group">
-                                    <label for="waReviewSurveyAgent" class="text-muted">Agent</label>
+                                    <label for="waReviewSurveyAgent">Agent</label>
                                     <select class="custom-select" name="waReviewSurveyAgent" id="waReviewSurveyAgent"  style="text-align: center; text-align-last: center;">
                                         <option value="">- select agent -</option>
                                         <?php foreach ($allActiveAgent as $ag) : ?>
@@ -30,20 +31,20 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="waReviewSurveyLatestScore" class="text-muted">Prev result</label>
+                                    <label for="waReviewSurveyLatestScore">This month result</label>
                                     <div id="waReviewSurveyLatestScore">
-                                        <?= value2barstotal(0/15 * 100, 0) ?>
+                                        <?= wa2barstotal(0/15 * 100, 0) ?>
                                     </div>
                                     <!-- <input type="" class="form-control text-center" id="waReviewSurveyLatestScore" value="On Dev. progress" readonly> -->
                                 </div>
                                 <div class="form-group">
-                                    <label for="waReviewSurveyVoiceNumber" class="text-muted">WA # (current)</label>
+                                    <label for="waReviewSurveyVoiceNumber">WA # (current)</label>
                                     <input type="" class="form-control text-center" id="waReviewSurveyVoiceNumber" value="0" readonly>
                                 </div>
                                 <div class="form-group">
-                                    <label for="waReviewSurveyCurrentScore" class="text-muted">Current WA score</label>
+                                    <label for="waReviewSurveyCurrentScore">Current WA score</label>
                                     <div id="waReviewSurveyCurrentScore">
-                                        <?= value2barstotal(0/15 * 100, 0) ?>
+                                        <?= wa2barstotal(0/15 * 100, 0) ?>
                                     </div>
                                     <!-- <input type="" class="form-control text-center text-primary" id="voiceSurveyCurrentScore" value="On Dev. progress" readonly> -->
                                 </div>
@@ -90,7 +91,7 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="form-group row bg-light">
+                                <div class="form-group row">
                                     <label for="waReviewSurveyConversationDate" class="col-sm-2 col-form-label" style="min-width: 120px;">Conversation date</label>
                                     <div class="col-sm-3" style="max-width: 240px; min-width: 238px;">
                                         <input type="datetime-local" class="form-control" name="waReviewSurveyConversationDate" id="waReviewSurveyConversationDate" value="<?= date("Y-m-d H:i") ?>" required>
@@ -100,7 +101,7 @@
                                         <input type="" class="form-control" name="waReviewSurveyPhone" id="waReviewSurveyPhone" value="" placeholder="Telp konsumen" required>
                                     </div>
                                 </div>
-                                <div class="form-group row border-bottom pb-3 bg-light">
+                                <div class="form-group row">
                                     <label for="waReviewSurveyTicket" class="col-sm-2 col-form-label" style="min-width: 120px;">Ticket</label>
                                     <div class="col-sm-3" style="max-width: 240px; min-width: 238px;">
                                         <input type="" class="form-control" name="waReviewSurveyTicket" id="waReviewSurveyTicket" placeholder="No ticket jika ada">
@@ -135,7 +136,7 @@
                                 </div>
 
                                 <!-- Greeting -->
-                                <div class="form-group row border-bottom pb-3">
+                                <div class="form-group row border-top mt-3 pt-3">
                                     <label for="waReviewSurveyResponseGood" class="col-sm-2 col-form-label" style="max-width: 110px; min-width: 100px">Response</label>
                                     <div class="col-sm-9">
                                         <div class="mb-2">
@@ -146,7 +147,7 @@
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
                                                         <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
                                                     </svg>
-                                                    <label>OK / Good <em class="text-muted"> - Respon balasan < 1 menit</em></label>
+                                                    <label>OK / Good <em class="text-muted"> - Respon balasan ~ 1 menit</em></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -158,7 +159,7 @@
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
                                                         <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
                                                     </svg>
-                                                    <label>Need Improve <em class="text-muted"> - Respon balasan 1 ~ 5 menit</em></label>
+                                                    <label>Need Improve <em class="text-muted"> - Respon balasan 2 ~ 5 menit</em></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -215,7 +216,7 @@
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
                                                         <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
                                                     </svg>
-                                                    <label>Bad <em class="text-muted">- salah informasi ke konsumen</em></label>
+                                                    <label>Not good <em class="text-muted">- salah informasi ke konsumen</em></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -260,7 +261,7 @@
                                                     <svg class="svg svg-icon" viewBox="0 0 20 20">
                                                         <path d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" style="stroke: white;fill:white;"></path>
                                                     </svg>
-                                                    <label>Bad <em class="text-muted">- kalimat asal, tidak mencerminkan layanan WA perusahaan.</em></label>
+                                                    <label>Not good <em class="text-muted">- kalimat asal, tidak mencerminkan layanan WA perusahaan.</em></label>
                                                 </div>
                                             </div>
                                         </div>

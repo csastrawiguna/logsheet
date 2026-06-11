@@ -2,7 +2,7 @@
 
 // summary
  if(!$this->input->post('selectSummaryVoiceStart')) {
-    $startPeriod = date("Y-m-01", strtotime("-6 months"));
+    $startPeriod = date("Y-m-01");
     $endPeriod = date("Y-m-d");
  } else {
     $startPeriod = date("Y-m-01", strtotime($this->input->post('selectSummaryVoiceStart')));
@@ -151,3 +151,39 @@ function itemScoreToColor($val)
 	}
 	return $out;
 }
+
+function wa2barstotal($rtio, $qty) {
+ 	$clr = '';
+ 	$stat = '';
+ 	if ($rtio >= 85) {
+ 		$clr = 'success';
+ 		$stat = 'Good';
+ 	} else if ($rtio >= 70 && $rtio < 85) {
+ 		$clr = 'warning';
+ 		$stat = 'Need improve';
+ 	} else {
+ 		$clr = 'danger';
+ 		$stat = 'Bad';
+ 	}
+    $teks = '<div class="col-sm-auto"><div><span class="badge">' . $stat . ' </div><span class="ml-1 float-right h6 text-' . $clr . '"> ' . $rtio . '%</span><div class="progress-group"><div class="progress" style="min-height: 18px;"><div class="progress-bar bg-'. $clr .'" style="width:' . $rtio . '%; height: 100%;"></div></div></div></div>';
+    return $teks;
+}
+
+function wa2barslite($rtio, $score, $qty) {
+ 	$clr = '';
+ 	$stat = '';
+ 	if ($rtio >= 85) {
+ 		$clr = 'success';
+ 		$stat = 'Good';
+ 	} else if ($rtio > 70 && $rtio < 85) {
+ 		$clr = 'warning';
+ 		$stat = 'Need improve';
+ 	} else {
+ 		$clr = 'danger';
+ 		$stat = 'Bad';
+ 	}
+    $teks = '<div class="col-sm-auto"><div><span class="badge">' . $stat . ' <span class="text-muted">(' . $score . '/' . $qty . ')</span></div><span class="ml-1 float-right h6 text-' . $clr . '"> ' . $rtio . '%</span><div class="progress-group"><div class="progress" style="min-height: 18px;"><div class="progress-bar bg-'. $clr .'" style="width:' . $rtio . '%; height: 100%;"></div></div></div></div>';
+    return $teks;
+}
+
+$allowedAccess = in_array($this->session->userdata('role_access'), ['1', '5', '7', '9']);

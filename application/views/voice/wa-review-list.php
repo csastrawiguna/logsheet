@@ -6,7 +6,6 @@
         <?php 
           require 'function-voice.php';
           $maxScore = (int)$scoreList['high'] * 3;
-          $allowedAccess = in_array($this->session->userdata('role_access'), ['1', '5', '7', '9'])
         ?>
         <div class="container-fluid pt-2 px-1">
             <div class="card">
@@ -32,7 +31,7 @@
                         </div>
                     </form>
                     <div class="border mb-3"></div>
-                    <table class="table table-bordered dataTableBasic">
+                    <table class="table table-bordered table-sm dataTableBasic">
                         <thead class="thead-light">
                             <tr>
                                 <th rowspan="2" class="align-middle">#</th>
@@ -92,6 +91,7 @@
                                     <td>
                                         <a href="#" data-id="<?= $row['id'] ?>" data-agent="<?= $row['agent'] ?>" data-datetime="<?= $row['datetime'] ?>" data-customerphone="<?= $row['customer_phone'] ?>" class="buttonWaReviewViewDetail" data-toggle="modal" data-target="#modalWaReviewDetaiChatModal">  <i class="fas fa-search text-info"></i>
                                         </a> 
+                                         | <?= surveyorTag($row['saved_by'], $row['saved_at']) ?>
                                         <?php if ($allowedAccess) : ?>
                                             <br>
                                             <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewEdit"><i class="fas fa-edit text-secondary"></i></a>  &nbsp; 

@@ -4481,6 +4481,23 @@ $(function () {
 	    return teks;
 	}
 
+	function wa2barslite(rtio, score, qty) {
+	 	clr = '';
+	 	stat = '';
+	 	if (rtio >= 85) {
+	 		clr = 'success';
+	 		stat = 'Good';
+	 	} else if (rtio >= 70 && rtio < 85) {
+	 		clr = 'warning';
+	 		stat = 'Need improve';
+	 	} else {
+	 		clr = 'danger';
+	 		stat = 'Bad';
+	 	}
+	    teks = '<div class="col-sm-auto"><div><span class="badge">' + stat + ' <span class="text-muted">(' + score + '/' + qty + ')</span></div><span class="ml-1 float-right h6 text-' + clr + '"> ' + rtio + '%</span><div class="progress-group"><div class="progress" style="min-height: 18px;"><div class="progress-bar bg-'+ clr +'" style="width:' + rtio + '%; height: 100%;"></div></div></div></div>';
+	    return teks;
+	}
+
 	function value2barsmini(rtio, qty) {
 	 	clr = '';
 	 	stat = '';
@@ -4645,7 +4662,7 @@ $(function () {
 			method : "post",
 			success : function(data) {
 				console.log(data);
-				var rslt = value2barslite(data.averageScore, data.averageScore, 15);
+				var rslt = wa2barslite(data.averageScore, data.averageScore, 15);
 				$("#waReviewSurveyLatestScore").html(rslt);
 				$("#waReviewSurveyVoiceNumber").val(parseInt(data.qty) + 1);
 			}
@@ -4669,7 +4686,7 @@ $(function () {
             }
         }
 
-        var initRslt = value2barslite(parseFloat(initVal / 15 * 100).toFixed(1), initVal, 15);
+        var initRslt = wa2barslite(parseFloat(initVal / 15 * 100).toFixed(1), initVal, 15);
 	    target.html(initRslt);
 
 		elmt.on("click", function(){
@@ -4679,7 +4696,7 @@ $(function () {
 	                count += parseInt($(elmt[i]).val());
 	            }
 	        }
-	        var rslt = value2barslite(parseFloat(count / 15 * 100).toFixed(1), count, 15);
+	        var rslt = wa2barslite(parseFloat(count / 15 * 100).toFixed(1), count, 15);
 	        target.html(rslt);
 		});
 	}

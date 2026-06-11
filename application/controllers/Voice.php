@@ -723,7 +723,6 @@ class Voice extends MY_Controller
         check_access();
         $data['title'] = 'Summary of WA Review';
 
-
         $this->load->view('templates/header', $data);
         $this->load->view('templates/navbar', $data);
         $this->load->view('templates/sidebar', $data);
@@ -739,7 +738,7 @@ class Voice extends MY_Controller
         $data['title'] = 'WA Reply Review List';
 
         if(!$this->input->post('waReviewAllStartPeriod') && !$this->input->post('waReviewAllEndPeriod')) {
-            $data['startPeriod'] = date("Y-m-d", strtotime("-7 days"));
+            $data['startPeriod'] = date("Y-m-01");
             $data['endPeriod'] = date("Y-m-d");
         } else {
             $data['startPeriod'] = $this->input->post('waReviewAllStartPeriod');
@@ -754,7 +753,35 @@ class Voice extends MY_Controller
         $this->load->view('templates/sidebar', $data);
         $this->load->view('voice/wa-review-list', $data);
         $this->load->view('templates/footer');
+    }
 
+    // WA Review By Agent
+    public function wareviewbyagent()
+    {
+        check_access();
+        $data['title'] = 'Summary of WA Review';
+
+         if (!$this->input->post('wareviewByAgentDateStart')) {
+            $data['startPeriod'] = date("Y-m-01", strtotime('-1 months'));
+            $data['endPeriod'] = date("Y-m-d");
+            $data['agent'] = $this->session->userdata('user_id');
+        } else {
+            $data['startPeriod'] = date("Y-m-01", strtotime($this->input->post('wareviewByAgentDateStart')));
+            $data['endPeriod'] = date("Y-m-d", strtotime($this->input->post('wareviewByAgentDateEnd')));
+            $data['agent'] = $this->input->post('wareviewByAgentSelectAgent');
+        }
+
+        $data['allAgent'] = $this->voice->getAllActiveAgent();
+        $data['scoreList'] = array_column($this->voice->getWaReviewScorelist(), 'score', 'level');
+        $data['wareviewListByAgent'] = $this->voice->getWaReviewByPeriodByAgent($data['startPeriod'], $data['endPeriod'], $data['agent']);
+        $data['wareviewSummaryByAgent'] = $this->voice->getWaSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], $data['agent']);
+        $data['wareviewUnproperByAgent'] = $this->voice->getWaUnproperByPeriodByAgent($data['startPeriod'], $data['endPeriod'], $data['agent']);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/navbar', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('voice/wa-review-byagent', $data);
+        $this->load->view('templates/footer');
     }
 
     // isi form review balasan WA
@@ -812,7 +839,6 @@ class Voice extends MY_Controller
 
     public function waReviewCurrentMonthScore()
     {
-        // $result = $this->voice->getWaReviewByAgentByMonth('Aliyah', '2026-06-01');
         $result = $this->voice->getWaReviewByAgentByMonth($this->input->post('agent'), $this->input->post('period'));
         $maxScore = (int) $this->db->get_where('wa_review_score', ['level' => 'high'])->row_array()['score'];
         $data = [

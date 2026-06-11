@@ -263,6 +263,39 @@ class Voice_model extends CI_Model
         return $this->db->get('wa_review')->result_array();
     }
 
+    public function getWaSummaryByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
+    {
+        $this->db->select('period');
+        $this->db->select('COUNT(customer_phone) AS qty');
+        $this->db->select('AVG(score_response) AS avg_score_response');
+        $this->db->select('AVG(score_accuracy) AS avg_score_accuracy');
+        $this->db->select('AVG(score_wording) AS avg_score_wording');
+        $this->db->select('(AVG(score_response) + AVG(score_accuracy) + AVG(score_wording)) AS avg_total');
+        $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") >= ', $startPeriod);
+        $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") <= ', $endPeriod);
+        if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
+            $this->db->where_in('agent', $agent);
+        }
+        return $this->db->get('wa_review')->result_array();
+    }
+
+    public function getWaUnproperByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
+    {
+
+        if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
+            $this->db->where_in('agent', $agent);
+        }
+        $this->db->group_start();
+            $this->db->where('score_response < ', 5);
+            $this->db->or_where('score_accuracy < ', 5);
+            $this->db->or_where('score_wording < ', 5);
+        $this->db->group_end();
+        $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") >= ', $startPeriod);
+        $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") <= ', $endPeriod);
+        $this->db->order_by('agent', 'ASC');
+        return $this->db->get('wa_review')->result_array();
+    }
+
     public function getDetailWaById($id)
     {
         $this->db->where('review_id', $id);
