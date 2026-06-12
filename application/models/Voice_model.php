@@ -280,6 +280,21 @@ class Voice_model extends CI_Model
         return $this->db->get('wa_review')->result_array();
     }
 
+    public function getWaSummaryByPeriod($startPeriod, $endPeriod, $agent = NULL)
+    {
+        $this->db->select('COUNT(customer_phone) AS qty');
+        $this->db->select('AVG(score_response) AS avg_score_response');
+        $this->db->select('AVG(score_accuracy) AS avg_score_accuracy');
+        $this->db->select('AVG(score_wording) AS avg_score_wording');
+        $this->db->select('(AVG(score_response) + AVG(score_accuracy) + AVG(score_wording)) AS avg_total');
+        $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") >= ', $startPeriod);
+        $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") <= ', $endPeriod);
+        if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
+            $this->db->where_in('agent', $agent);
+        }
+        return $this->db->get('wa_review')->result_array();
+    }
+
     public function getWaUnproperByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
     {
 
@@ -294,6 +309,7 @@ class Voice_model extends CI_Model
         $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") >= ', $startPeriod);
         $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") <= ', $endPeriod);
         $this->db->order_by('agent', 'ASC');
+        $this->db->order_by('datetime', 'ASC');
         return $this->db->get('wa_review')->result_array();
     }
 

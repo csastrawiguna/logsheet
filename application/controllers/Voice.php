@@ -723,6 +723,19 @@ class Voice extends MY_Controller
         check_access();
         $data['title'] = 'Summary of WA Review';
 
+        if(!$this->input->post('wareviewSummaryDateStart') && !$this->input->post('wareviewSummaryDateEnd')) {
+            $data['startPeriod'] = date("Y-m-01");
+            $data['endPeriod'] = date("Y-m-d");
+        } else {
+            $data['startPeriod'] = $this->input->post('wareviewSummaryDateStart');
+            $data['endPeriod'] = $this->input->post('wareviewSummaryDateEnd');
+        }
+
+        $data['scoreList'] = array_column($this->voice->getWaReviewScorelist(), 'score', 'level');
+        $data['wareviewSummaryAllByPeriod'] = $this->voice->getWaSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod']);
+        $data['wareviewSummaryAllTotal'] = $this->voice->getWaSummaryByPeriod($data['startPeriod'], $data['endPeriod'])[0
+        $data['wareviewUnproperAll'] = $this->voice->getWaUnproperByPeriodByAgent($data['startPeriod'], $data['endPeriod']);
+
         $this->load->view('templates/header', $data);
         $this->load->view('templates/navbar', $data);
         $this->load->view('templates/sidebar', $data);
