@@ -166,7 +166,7 @@ function wa2barslite($rtio, $score, $qty) {
  	if ($rtio >= 85) {
  		$clr = 'success';
  		$stat = 'Good';
- 	} else if ($rtio > 70 && $rtio < 85) {
+ 	} else if ($rtio > 40 && $rtio < 85) {
  		$clr = 'warning';
  		$stat = 'Need improve';
  	} else {
