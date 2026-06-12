@@ -1,14 +1,5 @@
 <?php 
 
-// summary
- if(!$this->input->post('selectSummaryVoiceStart')) {
-    $startPeriod = date("Y-m-01");
-    $endPeriod = date("Y-m-d");
- } else {
-    $startPeriod = date("Y-m-01", strtotime($this->input->post('selectSummaryVoiceStart')));
-    $endPeriod = $this->input->post('selectSummaryVoiceEnd');
- }
-
  function achievement2color($val, $mult) {
     $ratio = $val / $mult;
     if ($ratio < 0.80) {

@@ -2,7 +2,16 @@
    <section class="content">
       <div class="flashmessage" style="display: none;"><?= $this->session->flashdata('message'); ?></div>
       <?php 
-      require 'function-voice.php';
+         require 'function-voice.php';
+
+         // date for Summary
+         if(!$this->input->post('selectSummaryVoiceStart')) {
+             $startPeriod = date("Y-m-01");
+             $endPeriod = date("Y-m-d");
+          } else {
+             $startPeriod = date("Y-m-01", strtotime($this->input->post('selectSummaryVoiceStart')));
+             $endPeriod = $this->input->post('selectSummaryVoiceEnd');
+          }
       ?>
 
       <div class="container-fluid pt-2 px-0">

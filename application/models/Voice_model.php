@@ -276,6 +276,7 @@ class Voice_model extends CI_Model
         if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
             $this->db->where_in('agent', $agent);
         }
+        $this->db->group_by('period');
         return $this->db->get('wa_review')->result_array();
     }
 
