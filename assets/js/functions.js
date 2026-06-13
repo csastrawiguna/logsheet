@@ -4494,7 +4494,7 @@ $(function () {
 	 		clr = 'danger';
 	 		stat = 'Bad';
 	 	}
-	    teks = '<div class="col-sm-auto"><div><span class="badge">' + stat + ' <span class="text-muted">(' + score + '/' + qty + ')</span></div><span class="ml-1 float-right h6 text-' + clr + '"> ' + rtio + '%</span><div class="progress-group"><div class="progress" style="min-height: 18px;"><div class="progress-bar bg-'+ clr +'" style="width:' + rtio + '%; height: 100%;"></div></div></div></div>';
+	    teks = '<div class="col-sm-auto"><div><span class="badge">' + stat + ' <span class="text-muted">(' + score + '/' + qty + ')</span></div><span class="ml-1 float-right h6 text-' + clr + '"> ' + rtio + '</span><div class="progress-group"><div class="progress" style="min-height: 18px;"><div class="progress-bar bg-'+ clr +'" style="width:' + rtio + '%; height: 100%;"></div></div></div></div>';
 	    return teks;
 	}
 

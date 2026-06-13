@@ -14,7 +14,7 @@ class MY_Controller extends CI_Controller {
             if ($this->uri->segment(1) !== 'auth' && $this->uri->segment(1) !== 'index') {
                 
                 // Set flashdata sakedap kanggo masihan terang ka user
-                $this->session->set_flashdata('message', 'Danger|danger|Sesi anjeun parantos béak, mangga login deui!');
+                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Your session was ended!</div>');
                 
                 // Direct ka halaman login
                 redirect('auth/index'); 

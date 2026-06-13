@@ -263,9 +263,10 @@ class Voice_model extends CI_Model
         return $this->db->get('wa_review')->result_array();
     }
 
-    public function getWaSummaryByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
+    public function getWaSummaryByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL, $groupBy = NULL, $orderBy, $orderMethod)
     {
         $this->db->select('period');
+        $this->db->select('agent');
         $this->db->select('COUNT(customer_phone) AS qty');
         $this->db->select('AVG(score_response) AS avg_score_response');
         $this->db->select('AVG(score_accuracy) AS avg_score_accuracy');
@@ -276,15 +277,27 @@ class Voice_model extends CI_Model
         if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
             $this->db->where_in('agent', $agent);
         }
-        $this->db->group_by('period');
+        if (!is_null($groupBy) || $groupBy !== 'NULL' || $groupBy !== NULL){
+            $this->db->group_by($groupBy);
+        }
+        $this->db->order_by($orderBy, $orderMethod);
         return $this->db->get('wa_review')->result_array();
     }
 
     public function getWaSummaryByPeriod($startPeriod, $endPeriod, $agent = NULL)
     {
         $this->db->select('COUNT(customer_phone) AS qty');
+        $this->db->select('COUNT(CASE WHEN score_response = 5 THEN 1 END) AS score_response_5');
+        $this->db->select('COUNT(CASE WHEN score_response = 3 THEN 1 END) AS score_response_3');
+        $this->db->select('COUNT(CASE WHEN score_response = 1 THEN 1 END) AS score_response_1');
         $this->db->select('AVG(score_response) AS avg_score_response');
+        $this->db->select('COUNT(CASE WHEN score_accuracy = 5 THEN 1 END) AS score_accuracy_5');
+        $this->db->select('COUNT(CASE WHEN score_accuracy = 3 THEN 1 END) AS score_accuracy_3');
+        $this->db->select('COUNT(CASE WHEN score_accuracy = 1 THEN 1 END) AS score_accuracy_1');
         $this->db->select('AVG(score_accuracy) AS avg_score_accuracy');
+        $this->db->select('COUNT(CASE WHEN score_wording = 5 THEN 1 END) AS score_wording_5');
+        $this->db->select('COUNT(CASE WHEN score_wording = 3 THEN 1 END) AS score_wording_3');
+        $this->db->select('COUNT(CASE WHEN score_wording = 1 THEN 1 END) AS score_wording_1');
         $this->db->select('AVG(score_wording) AS avg_score_wording');
         $this->db->select('(AVG(score_response) + AVG(score_accuracy) + AVG(score_wording)) AS avg_total');
         $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") >= ', $startPeriod);

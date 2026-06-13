@@ -65,11 +65,6 @@ class Auth extends CI_Controller
                         $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Incorrect password!</div>');
                         redirect('auth');
                     }
-                // if($user['role_access'] == 10) {
-                    //redirect('auth/banned');
-                    // return true;
-                // } else {
-                    //}    
                 }
                 
             } else {

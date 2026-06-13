@@ -54,44 +54,44 @@
                             <?php $i = 1; ?>
                             <?php foreach($waReviewList as $row) : ?>
                                 <tr>
-                                    <td><?= $i++; ?></td>
-                                    <td><?= date("M Y", strtotime($row['period'])); ?></td>
-                                    <td class="bg-light text-bold"><?= $row['agent'] ?></td>
-                                    <td>
+                                    <td class="align-middle"><?= $i++; ?></td>
+                                    <td class="align-middle"><?= date("M Y", strtotime($row['period'])); ?></td>
+                                    <td class="align-middle text-bold"><?= $row['agent'] ?></td>
+                                    <td class="align-middle">
                                         <?= date("d M Y", strtotime($row['datetime'])) ?>
                                         <br>
                                         <?= date("H:i", strtotime($row['datetime'])) ?>
                                     </td>
-                                    <td class="">
+                                    <td class="align-middle">
                                         <?= $row['customer_phone'] ?>
                                         <br>
                                         <span class="badge badge-secondary font-weight-normal"><?= $row['system_code'] ?></span>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <?= itemScoreToColor($row['score_response']) ?>
                                         <br>
                                         <span class="text-small"><?= $row['response_remark'] ?></span>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <?= itemScoreToColor($row['score_accuracy']) ?>
                                         <br>
                                         <span class="text-small"><?= $row['accuracy_remark'] ?></span>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <?= itemScoreToColor($row['score_wording']) ?>
                                         <br>
                                         <span class="text-small"><?= $row['wording_remark'] ?></span>
                                     </td>
-                                    <td class="text-center bg-light">
+                                    <td class="text-center bg-light align-middle">
                                         <span class="text-bold text-primary"><?= number_format(($row['score_response'] + $row['score_accuracy'] + $row['score_wording']) / $maxScore * 100, 1) ?></span>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <?= $row['remark'] ?>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <a href="#" data-id="<?= $row['id'] ?>" data-agent="<?= $row['agent'] ?>" data-datetime="<?= $row['datetime'] ?>" data-customerphone="<?= $row['customer_phone'] ?>" class="buttonWaReviewViewDetail" data-toggle="modal" data-target="#modalWaReviewDetaiChatModal">  <i class="fas fa-search text-info"></i>
                                         </a> 
-                                         | <?= surveyorTag($row['saved_by'], $row['saved_at']) ?>
+                                        <?= surveyorTag($row['saved_by'], $row['saved_at']) ?>
                                         <?php if ($allowedAccess) : ?>
                                             <br>
                                             <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewEdit"><i class="fas fa-edit text-secondary"></i></a>  &nbsp; 
