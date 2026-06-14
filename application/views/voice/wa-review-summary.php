@@ -28,7 +28,7 @@
 
                     <!-- Summary All -->
                     <div class="row mt-5">
-                        <div class="col">
+                        <div class="col-md-10">
                             <p class="h5 text-indigo mb-3"><i class="far fa-file-alt"></i> Summary All</p>
                             <table class="table table-bordered">
                                 <thead class="thead-light">
@@ -46,10 +46,10 @@
                                             <br>
                                             Response
                                         </td>
-                                        <td class="align-middle col-sm-3">
+                                        <td class="align-middle col-sm-2">
                                             Average response time between customer chat and agent's reply
                                         </td>
-                                        <td class="align-middle col-sm-5">
+                                        <td class="align-middle col-sm-6">
                                             <div class="row">
                                                 <?= wa2bars('Good', number_format(($wareviewSummaryAllTotal['score_response_5'] / $wareviewSummaryAllTotal['qty']) * 100, 1) . '%', $wareviewSummaryAllTotal['score_response_5'], 'success') ?>
                                                 <?= wa2bars('Flat', number_format(($wareviewSummaryAllTotal['score_response_3'] / $wareviewSummaryAllTotal['qty']) * 100, 1) . '%', $wareviewSummaryAllTotal['score_response_3'], 'warning') ?>
@@ -66,10 +66,10 @@
                                             <br>
                                             Accuracy
                                         </td>
-                                        <td class="align-middle col-sm-3">
+                                        <td class="align-middle col-sm-2">
                                             Accuracy of information delivered to customer
                                         </td>
-                                        <td class="align-middle col-sm-5">
+                                        <td class="align-middle col-sm-6">
                                             <div class="row">
                                                 <?= wa2bars('Good', number_format(($wareviewSummaryAllTotal['score_accuracy_5'] / $wareviewSummaryAllTotal['qty']) * 100, 1) . '%', $wareviewSummaryAllTotal['score_accuracy_5'], 'success') ?>
                                                 <?= wa2bars('Flat', number_format(($wareviewSummaryAllTotal['score_accuracy_3'] / $wareviewSummaryAllTotal['qty']) * 100, 1) . '%', $wareviewSummaryAllTotal['score_accuracy_3'], 'warning') ?>
@@ -86,10 +86,10 @@
                                             <br>
                                             Wording
                                         </td>
-                                        <td class="align-middle col-sm-3">
+                                        <td class="align-middle col-sm-2">
                                             Clear sentences and unambiguous
                                         </td>
-                                        <td class="align-middle col-sm-5">
+                                        <td class="align-middle col-sm-6">
                                             <div class="row">
                                                 <?= wa2bars('Good', number_format(($wareviewSummaryAllTotal['score_wording_5'] / $wareviewSummaryAllTotal['qty']) * 100, 1) . '%', $wareviewSummaryAllTotal['score_wording_5'], 'success') ?>
                                                 <?= wa2bars('Flat', number_format(($wareviewSummaryAllTotal['score_wording_3'] / $wareviewSummaryAllTotal['qty']) * 100, 1) . '%', $wareviewSummaryAllTotal['score_wording_3'], 'warning') ?>
@@ -113,20 +113,81 @@
                         </div>
                     </div>
 
+                    <!-- Monthly Transition -->
+                    <div class="row mt-4">
+                        <div class="col-sm-10">
+                            <p class="h5 text-indigo mb-3"><i class="far fa-calendar-alt"></i> Monthly Transition</p>
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr class="text-center">
+                                        <th class="align-middle">#</th>
+                                        <th class="align-middle"><i class="far fa-calendar-alt"></i><br>Month</th>
+                                        <th class="align-middle"><i class="far fa-file-alt"></i><br>Qty</th>
+                                        <th class="align-middle"><i class="far fa-clock"></i><br>Response</th>
+                                        <th class="align-middle"><i class="fas fa-check"></i><br>Accuracy</th>
+                                        <th class="align-middle"><i class="fas fa-spell-check"></i><br>Wording</th>
+                                        <th class="align-middle"><i class="far fa-clipboard"></i><br>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $i = 1; ?>
+                                    <?php foreach ($wareviewSummaryAllTransition as $row) : ?>
+                                        <tr>
+                                            <td class="text-center align-middle"><?= $i++ ?></td>
+                                            <td class="align-middle"><?= date("M Y", strtotime($row['period'])) ?></td>
+                                            <td class="text-center align-middle"><?= $row['qty'] ?></td>
+                                            <td class="text-center align-middle">
+                                                <?= wa2barslite(number_format(($row['avg_score_response'] * 100) / 5, 0), number_format($row['avg_score_response'], 1), $row['qty']) ?>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <?= wa2barslite(number_format(($row['avg_score_accuracy'] * 100) / 5, 0), number_format($row['avg_score_accuracy'], 1), $row['qty']) ?>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <?= wa2barslite(number_format(($row['avg_score_wording'] * 100) / 5, 0), number_format($row['avg_score_wording'], 1), $row['qty']) ?>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <?= wa2barslite(number_format(($row['avg_total'] * 100) / 15, 0), number_format($row['avg_total'], 1), 15) ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <tr class="text-bold text-center">
+                                        <td class="align-middle" colspan="2">Total</td>
+                                        <td class="align-middle">
+                                            
+                                        </td>
+                                        <td class="align-middle">
+                                            <?= wa2barslite(number_format(($wareviewSummaryAllTotal['avg_score_response'] * 100) / 5, 0), number_format($wareviewSummaryAllTotal['avg_score_response'], 1), 5) ?>
+                                        </td>
+                                        <td class="align-middle">
+                                            <?= wa2barslite(number_format(($wareviewSummaryAllTotal['avg_score_accuracy'] * 100) / 5, 0), number_format($wareviewSummaryAllTotal['avg_score_accuracy'], 1), 5) ?>
+                                        </td>
+                                        <td class="align-middle">
+                                            <?= wa2barslite(number_format(($wareviewSummaryAllTotal['avg_score_wording'] * 100) / 5, 0), number_format($wareviewSummaryAllTotal['avg_score_wording'], 1), 5) ?>
+                                        </td>
+                                        <td class="align-middle">
+                                            <?= wa2barslite(number_format(($wareviewSummaryAllTotal['avg_total'] * 100) / 15, 0), number_format($wareviewSummaryAllTotal['avg_total'], 1), 15) ?>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                     
+
                     <!-- Summary by Agent -->
                     <div class="row mt-4">
-                        <div class="col-md-8">
+                        <div class="col-md-10">
                             <p class="h5 text-indigo mb-3"><i class="fas fa-user-friends"></i> Summary By Agent</p>
                             <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr class="text-center">
-                                        <th>#</th>
-                                        <th>Agent</th>
-                                        <th><i class="far fa-file-alt"></i></th>
-                                        <th>Response</th>
-                                        <th>Accuracy</th>
-                                        <th>Wording</th>
-                                        <th>Score</th>
+                                        <th class="align-middle">#</th>
+                                        <th class="align-middle"><i class="far fa-user"></i><br>Agent</th>
+                                        <th class="align-middle"><i class="far fa-file-alt"></i><br>Qty</th>
+                                        <th class="align-middle"><i class="far fa-clock"></i><br>Response</th>
+                                        <th class="align-middle"><i class="fas fa-check"></i><br>Accuracy</th>
+                                        <th class="align-middle"><i class="fas fa-spell-check"></i><br>Wording</th>
+                                        <th class="align-middle"><i class="far fa-clipboard"></i><br>Score</th>
                                     </tr>
                                 </thead>
                                 <tbody>

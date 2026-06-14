@@ -734,6 +734,7 @@ class Voice extends MY_Controller
         $data['scoreList'] = array_column($this->voice->getWaReviewScorelist(), 'score', 'level');
         $data['wareviewSummaryAllTotal'] = $this->voice->getWaSummaryByPeriod($data['startPeriod'], $data['endPeriod'])[0];
         $data['wareviewSummaryAllByPeriod'] = $this->voice->getWaSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'agent', 'avg_total', 'DESC');
+        $data['wareviewSummaryAllTransition'] = $this->voice->getWaSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'period', 'period', 'ASC');
         $data['wareviewUnproperAll'] = $this->voice->getWaUnproperByPeriodByAgent($data['startPeriod'], $data['endPeriod']);
 
         $this->load->view('templates/header', $data);

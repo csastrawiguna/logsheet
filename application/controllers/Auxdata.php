@@ -19,6 +19,31 @@ class Auxdata extends MY_Controller
         $data['title'] = 'AUX data';
 
         if(!$this->input->post('auxSummaryDateStart') && !$this->input->post('auxSummaryDateEnd')) {
+            $data['startPeriod'] = date("Y-m-01", strtotime("-6 months"));
+            $data['endPeriod'] = date("Y-m-01");
+        } else {
+            $data['startPeriod'] = $this->input->post('auxSummaryDateStart');
+            $data['endPeriod'] = $this->input->post('auxSummaryDateEnd');
+        }
+        
+        $data['auxSummaryMonthlyTransition'] = $this->aux->getAuxSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'DATE_FORMAT(date, "%Y-%m-01")', NULL, 'period', 'ASC');
+        $data['auxSummaryMonthlyTransitionWeekday'] = $this->aux->getAuxSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'DATE_FORMAT(date, "%Y-%m-01")', 1, 'period', 'ASC');
+        $data['auxSummaryMonthlyTransitionOvertime'] = $this->aux->getAuxSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'DATE_FORMAT(date, "%Y-%m-01")', 9, 'period', 'ASC');
+        $data['auxSummaryByAgent'] = $this->aux->getAuxSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'agent', NULL, 'agent', 'ASC');;
+        
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/navbar');
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('auxdata/index', $data);
+        $this->load->view('templates/footer', $data);
+    }
+
+    public function monthly()
+    {
+        check_access();
+        $data['title'] = 'AUX Monthly';
+
+        if(!$this->input->post('auxSummaryDateStart') && !$this->input->post('auxSummaryDateEnd')) {
             $startPeriod = date("Y-m-01", strtotime("-6 months"));
             $endPeriod = date("Y-m-01");
         } else {
@@ -31,9 +56,8 @@ class Auxdata extends MY_Controller
         $this->load->view('templates/header', $data);
         $this->load->view('templates/navbar');
         $this->load->view('templates/sidebar', $data);
-        $this->load->view('auxdata/index', $data);
+        $this->load->view('auxdata/byagent', $data);
         $this->load->view('templates/footer', $data);
-        // $this->load->view('templates/footer-aux', $data);
     }
 
     public function byagent()

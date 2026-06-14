@@ -42,6 +42,39 @@ class Aux_model extends CI_Model
         return $this->db->get('aux_monthly')->result_array();
     }
 
+    public function getAuxSummaryByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL, $goupBy = NULL, $isoh = NULL, $orderBy, $orderMethod)
+    {
+        $this->db->select('agent');
+        $this->db->select('DATE_FORMAT(date, "%Y-%m-01") AS period');
+        $this->db->select('SUM(staffed_time) AS staffed_time');
+        $this->db->select('(SUM(aux_0) + SUM(aux_1) + SUM(aux_2) + SUM(aux_3) + SUM(aux_4) + SUM(aux_5) + SUM(aux_6) + SUM(aux_7) + SUM(aux_8) + SUM(aux_9) + SUM(aux_1099)) AS aux_total');
+        $this->db->select('SUM(aux_0) AS aux_0');
+        $this->db->select('SUM(aux_1) AS aux_1');
+        $this->db->select('SUM(aux_2) AS aux_2');
+        $this->db->select('SUM(aux_3) AS aux_3');
+        $this->db->select('SUM(aux_4) AS aux_4');
+        $this->db->select('SUM(aux_5) AS aux_5');
+        $this->db->select('SUM(aux_6) AS aux_6');
+        $this->db->select('SUM(aux_7) AS aux_7');
+        $this->db->select('SUM(aux_8) AS aux_8');
+        $this->db->select('SUM(aux_9) AS aux_9');
+        $this->db->select('SUM(aux_1099) AS aux_1099');
+
+        $this->db->where('date >=', $startPeriod);
+        $this->db->where('date <=', $endPeriod);
+        if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
+            $this->db->where_in('agent', $agent);
+        }
+        if (!is_null($goupBy) || $goupBy !== 'NULL' || $goupBy !== NULL){
+            $this->db->group_by($goupBy);
+        }
+        if (!is_null($isoh) || $isoh !== 'NULL' || $isoh !== NULL){
+            $this->db->where_in('is_oh', $isoh);
+        }
+        $this->db->order_by($orderBy, $orderMethod);
+        return $this->db->get('aux_daily')->result_array();
+    }
+
     public function uploadAuxSummaryFromExcel($data)
     {
         $this->db->insert_batch('aux_monthly', $data);
