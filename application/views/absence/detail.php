@@ -8,7 +8,7 @@
                     $startPeriod = $this->input->post('absentDetailDateStart');
                     $endPeriod = $this->input->post('absentDetailDateEnd');
                 } else{
-                    $startPeriod = date("Y-m-d", strtotime("-6 months"));
+                    $startPeriod = date("Y-m-d", strtotime("-3 months"));
                     $endPeriod = date("Y-m-d");
                 }
 

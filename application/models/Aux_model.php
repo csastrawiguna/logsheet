@@ -46,19 +46,19 @@ class Aux_model extends CI_Model
     {
         $this->db->select('agent');
         $this->db->select('DATE_FORMAT(date, "%Y-%m-01") AS period');
-        $this->db->select('SUM(staffed_time) AS staffed_time');
-        $this->db->select('(SUM(aux_0) + SUM(aux_1) + SUM(aux_2) + SUM(aux_3) + SUM(aux_4) + SUM(aux_5) + SUM(aux_6) + SUM(aux_7) + SUM(aux_8) + SUM(aux_9) + SUM(aux_1099)) AS aux_total');
-        $this->db->select('SUM(aux_0) AS aux_0');
-        $this->db->select('SUM(aux_1) AS aux_1');
-        $this->db->select('SUM(aux_2) AS aux_2');
-        $this->db->select('SUM(aux_3) AS aux_3');
-        $this->db->select('SUM(aux_4) AS aux_4');
-        $this->db->select('SUM(aux_5) AS aux_5');
-        $this->db->select('SUM(aux_6) AS aux_6');
-        $this->db->select('SUM(aux_7) AS aux_7');
-        $this->db->select('SUM(aux_8) AS aux_8');
-        $this->db->select('SUM(aux_9) AS aux_9');
-        $this->db->select('SUM(aux_1099) AS aux_1099');
+        $this->db->select('AVG(staffed_time) AS staffed_time');
+        $this->db->select('(AVG(aux_0) + AVG(aux_1) + AVG(aux_2) + AVG(aux_3) + AVG(aux_4) + AVG(aux_5) + AVG(aux_6) + AVG(aux_7) + AVG(aux_8) + AVG(aux_9) + AVG(aux_1099)) AS aux_total');
+        $this->db->select('AVG(aux_0) AS aux_0');
+        $this->db->select('AVG(aux_1) AS aux_1');
+        $this->db->select('AVG(aux_2) AS aux_2');
+        $this->db->select('AVG(aux_3) AS aux_3');
+        $this->db->select('AVG(aux_4) AS aux_4');
+        $this->db->select('AVG(aux_5) AS aux_5');
+        $this->db->select('AVG(aux_6) AS aux_6');
+        $this->db->select('AVG(aux_7) AS aux_7');
+        $this->db->select('AVG(aux_8) AS aux_8');
+        $this->db->select('AVG(aux_9) AS aux_9');
+        $this->db->select('AVG(aux_1099) AS aux_1099');
 
         $this->db->where('date >=', $startPeriod);
         $this->db->where('date <=', $endPeriod);

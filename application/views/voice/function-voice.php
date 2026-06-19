@@ -182,4 +182,4 @@ function wa2bars($stat, $rtio, $qty, $clr) {
     return $teks;
 }
 
-$allowedAccess = in_array($this->session->userdata('role_access'), ['1', '5', '7', '9']);
+$allowedAccess = in_array($this->session->userdata('role_access'), ['1', '4', '5', '6', '9']);

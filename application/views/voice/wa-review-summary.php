@@ -230,7 +230,6 @@
                                         <th rowspan="2" class="align-middle">Cust. Phone</th>
                                         <th colspan="4" class="align-middle text-center">Review</th>
                                         <th rowspan="2" class="align-middle">Remark</th>
-                                        <th rowspan="2" class="align-middle">...</th>
                                     </tr>
                                     <tr>
                                         <th>Response</th>

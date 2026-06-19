@@ -28,7 +28,7 @@ class Auxdata extends MY_Controller
         
         $data['auxSummaryMonthlyTransition'] = $this->aux->getAuxSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'DATE_FORMAT(date, "%Y-%m-01")', NULL, 'period', 'ASC');
         $data['auxSummaryMonthlyTransitionWeekday'] = $this->aux->getAuxSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'DATE_FORMAT(date, "%Y-%m-01")', 1, 'period', 'ASC');
-        $data['auxSummaryMonthlyTransitionOvertime'] = $this->aux->getAuxSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'DATE_FORMAT(date, "%Y-%m-01")', 9, 'period', 'ASC');
+        $data['auxSummaryMonthlyTransitionOvertime'] = $this->aux->getAuxSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'DATE_FORMAT(date, "%Y-%m-01")', 0, 'period', 'ASC');
         $data['auxSummaryByAgent'] = $this->aux->getAuxSummaryByPeriodByAgent($data['startPeriod'], $data['endPeriod'], NULL, 'agent', NULL, 'agent', 'ASC');;
         
         $this->load->view('templates/header', $data);
