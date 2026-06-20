@@ -156,7 +156,7 @@ function wa2barstotal($rtio, $qty) {
  		$clr = 'danger';
  		$stat = 'Bad';
  	}
-    $teks = '<div class="col-sm-auto"><div><span class="badge">' . $stat . ' </div><span class="ml-1 float-right h6 text-' . $clr . '"> ' . $rtio . '</span><div class="progress-group"><div class="progress" style="min-height: 18px;"><div class="progress-bar bg-'. $clr .'" style="width:' . $rtio . '%; height: 100%;"></div></div></div></div>';
+    $teks = '<div class="col-sm-auto"><div><span class="badge">' . $stat . ' </div><span class="ml-1 float-right h6 text-' . $clr . '"> ' . number_format($rtio, 1) . '</span><div class="progress-group"><div class="progress" style="min-height: 18px;"><div class="progress-bar bg-'. $clr .'" style="width:' . number_format($rtio, 1) . '%; height: 100%;"></div></div></div></div>';
     return $teks;
 }
 
@@ -180,6 +180,11 @@ function wa2barslite($rtio, $score, $qty) {
 function wa2bars($stat, $rtio, $qty, $clr) {
     $teks = '<div class="col-sm-4 mb-3"><div><span class="badge">' . $stat . '</span></div><span class="ml-1 float-right h6 text-' . $clr . '"> ' . $rtio . '</span><div class="progress-group"><div class="progress" style="min-height: 18px;"><div class="progress-bar bg-'. $clr .'" style="width:' . $rtio . '; height: 100%;"></div></div></div><div class="text-muted">' . $qty . ' <small>chats</small></div></div>';
     return $teks;
+}
+
+function val2checked($val, $num) {
+	$val == $num ? $out = 'checked' : $out ='';
+	return $out;
 }
 
 $allowedAccess = in_array($this->session->userdata('role_access'), ['1', '4', '5', '6', '9']);

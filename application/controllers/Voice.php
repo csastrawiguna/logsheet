@@ -819,35 +819,110 @@ class Voice extends MY_Controller
             $this->load->view('templates/footer');
         } else {
             $newData = [
-                'period' => date("Y-m-01", strtotime($this->input->post('waReviewSurveyPeriod'))),
-                'datetime' => $this->input->post('waReviewSurveyConversationDate'),
-                'agent' => $this->input->post('waReviewSurveyAgent'),
-                'ticket_number' => $this->input->post('waReviewSurveyTicket') ?: NULL,
-                'system_code' => $this->input->post('waReviewSurveySystemCode') ?: NULL,
-                'customer_phone' => $this->input->post('waReviewSurveyPhone'),
-                'score_response' => $this->input->post('waReviewSurveyResponse'),
+                'period'          => date("Y-m-01", strtotime($this->input->post('waReviewSurveyPeriod'))),
+                'datetime'        => $this->input->post('waReviewSurveyConversationDate'),
+                'agent'           => $this->input->post('waReviewSurveyAgent'),
+                'ticket_number'   => $this->input->post('waReviewSurveyTicket') ?: NULL,
+                'system_code'     => $this->input->post('waReviewSurveySystemCode') ?: NULL,
+                'customer_phone'  => $this->input->post('waReviewSurveyPhone'),
+                'score_response'  => $this->input->post('waReviewSurveyResponse'),
                 'response_remark' => $this->input->post('waReviewSurveyResponseRemark') ?: NULL,
-                'score_accuracy' => $this->input->post('waReviewSurveyAccuracy'),
+                'score_accuracy'  => $this->input->post('waReviewSurveyAccuracy'),
                 'accuracy_remark' => $this->input->post('waReviewSurveyAccuracyRemark') ?: NULL,
-                'score_wording' => $this->input->post('waReviewSurveyWording'),
-                'wording_remark' => $this->input->post('waReviewSurveyWordingRemark') ?: NULL,
-                'remark' => $this->input->post('waReviewSurveyRemark') ?: NULL,
-                'saved_by' => $this->session->userdata('user_id'),
-                'saved_at' => date("Y-m-d H:i:s"),
+                'score_wording'   => $this->input->post('waReviewSurveyWording'),
+                'wording_remark'  => $this->input->post('waReviewSurveyWordingRemark') ?: NULL,
+                'remark'          => $this->input->post('waReviewSurveyRemark') ?: NULL,
+                'saved_by'        => $this->session->userdata('user_id'),
+                'saved_at'        => date("Y-m-d H:i:s"),
             ];
+
             $fileUpload = $_FILES['waReviewSurveyExcelFile'];
-            if ($fileUpload['size'] <= 0) {
-                if ($this->voice->addNewWaReview($newData) > 0 ) {
-                    $this->session->set_flashdata('message', 'Saved!|success|New WA review saved - Without chat raw!');
-                    redirect('voice/wareviewform');
-                };
-            } else {
-                $id = $this->voice->addNewWaReview($newData);
-                if ($this->waReviewUploadExcelDetail($fileUpload, $id) > 0 ) {
-                    $this->session->set_flashdata('message', 'Saved!|success|New WA review with chat raw saved!');
-                    redirect('voice/wareviewform');
+            $hasFile = ($fileUpload['size'] > 0);
+
+            // --- MIMITIAN TRANSAKSI DB ---
+            $this->db->trans_start();
+
+            // 1. Tetep insert scoring heula pikeun meunangkeun ID utama
+            $id = $this->voice->addNewWaReview($newData);
+
+            $uploadSuccess = true;
+            if ($hasFile && $id) {
+                // 2. Insert detail chat tina Excel
+                // Pastikeun fungsi waReviewUploadExcelDetail ngabalukarkeun return false/0 mun formatna gagal di-parse
+                $uploadStatus = $this->waReviewUploadExcelDetail($fileUpload, $id);
+                
+                if ($uploadStatus <= 0) {
+                    $uploadSuccess = false;
+                    // Paksa DB pikeun rollback kulantaran prosés Excel gagal
+                    $this->db->trans_status(FALSE); 
                 }
             }
+
+            // --- SELESAI TRANSAKSI DB ---
+            $this->db->trans_complete();
+
+            // Cek status transaksi
+            if ($this->db->trans_status() === FALSE || !$uploadSuccess) {
+                // Upami aya nu gagal, otomatis di-rollback ku CI3
+                $this->session->set_flashdata('message', 'Gagal Disimpan!|error|Format Excel detail chat tidak sesuai!');
+            } else {
+                // Upami suksés kabéh
+                if ($hasFile) {
+                    $this->session->set_flashdata('message', 'Saved!|success|New WA review with chat raw saved!');
+                } else {
+                    $this->session->set_flashdata('message', 'Saved!|success|New WA review saved - Without chat raw!');
+                }
+            }
+
+            // WAJIB REDIRECT boh suksés atanapi gagal pikeun nyegah double-post (F5)
+            redirect('voice/wareviewform');
+        }
+    }
+
+    // isi form review balasan WA
+    public function wareviewedit($id)
+    {
+        check_access();
+        $data['title'] = 'Edit WA Review';
+
+        $data['waReviewById'] = $this->voice->getWaReviewById($id);
+        $data['allActiveAgent'] = $this->voice->getAllActiveAgent();
+        $data['waReviewCurrentMonthResult'] = $this->voice->getWaReviewByAgentByMonth($data['waReviewById']['agent'], $data['waReviewById']['period']);
+        $data['waReviewCurrentMonthQty'] = $this->voice->getWAReviewNumberByAgentByPeriod($data['waReviewById']['agent'], $data['waReviewById']['period']);
+        $data['scoreList'] = array_column($this->voice->getWaReviewScorelist(), 'score', 'level');
+
+        $this->form_validation->set_rules('waReviewEditResponse', 'Responsiveness', 'required|trim');
+        $this->form_validation->set_rules('waReviewEditAccuracy', 'Accuracy', 'required|trim');
+        $this->form_validation->set_rules('waReviewEditWording', 'Wording', 'required|trim');
+
+        if ($this->form_validation->run() == false) {
+            $this->load->view('templates/header', $data);
+            $this->load->view('templates/navbar', $data);
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('voice/wa-review-edit', $data);
+            $this->load->view('templates/footer');
+        } else {
+            $updateData = [
+                'id' => $this->input->post('waReviewEditId'),
+                'datetime' => $this->input->post('waReviewEditConversationDate') ?: NULL,
+                'ticket_number' => $this->input->post('waReviewEditTicket') ?: NULL,
+                'system_code' => $this->input->post('waReviewEditSystemCode') ?: NULL,
+                'customer_phone' => $this->input->post('waReviewEditPhone'),
+                'score_response' => $this->input->post('waReviewEditResponse'),
+                'response_remark' => $this->input->post('waReviewEditResponseRemark') ?: NULL,
+                'score_accuracy' => $this->input->post('waReviewEditAccuracy'),
+                'accuracy_remark' => $this->input->post('waReviewEditAccuracyRemark') ?: NULL,
+                'score_wording' => $this->input->post('waReviewEditWording'),
+                'wording_remark' => $this->input->post('waReviewEditWordingRemark') ?: NULL,
+                'remark' => $this->input->post('waReviewEditRemark') ?: NULL,
+                'updated_by' => $this->session->userdata('user_id'),
+                'updated_at' => date("Y-m-d H:i:s"),
+            ];
+
+            if ($this->voice->editWaReview($updateData) > 0 ) {
+                $this->session->set_flashdata('message', 'Successly Updated!|success|WA review data updateed!');
+                redirect('voice/wareviewlist');
+            };
         }
     }
 
@@ -864,22 +939,27 @@ class Voice extends MY_Controller
 
     public function waReviewUploadExcelDetail($fileUpload, $id)
     {
-        if (!empty($fileUpload['name'])) {
-            // 1. Get file extension
-            $extension = pathinfo($fileUpload['name'], PATHINFO_EXTENSION);
+        if (empty($fileUpload['name'])) {
+            return 0;
+        }
 
-            if ($extension == 'csv') {
-                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Csv');
-            } elseif ($extension == 'xlsx') {
-                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
-            } else {
-                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');
-            }
+        // 1. Get file extension
+        $extension = pathinfo($fileUpload['name'], PATHINFO_EXTENSION);
 
-            // Supados PhpSpreadsheet kersa maca cell anu aya rumusna
-            $reader->setReadDataOnly(false);
+        if ($extension == 'csv') {
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Csv');
+        } elseif ($extension == 'xlsx') {
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+        } else {
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');
+        }
 
-            // Load file excel ti tmp
+        // Supados PhpSpreadsheet kersa maca cell anu aya rumusna
+        $reader->setReadDataOnly(false);
+
+        // BUNGKUS PROSES MACA JEUNG PARSING FILE KUNA TRY-CATCH
+        try {
+            // Load file excel ti tmp (tiasa error upami file corrupt / ruksak)
             $spreadsheet = $reader->load($fileUpload['tmp_name']);
             $sheet = $spreadsheet->getActiveSheet();
             
@@ -891,45 +971,46 @@ class Voice extends MY_Controller
             // Looping ti baris 2 (sanggeus header) dugi ka baris pangtungtungna
             for ($rowNum = 2; $rowNum <= $highestRow; $rowNum++) {
                 
-                // Cokot nilai nilat tiap kolom
+                // Cokot nilai nilai tiap kolom
+                // getCalculatedValue() tiasa ngalungkeun Exception upami rumusna error parah
                 $valA = $sheet->getCell('A' . $rowNum)->getCalculatedValue();
                 $valB = $sheet->getCell('B' . $rowNum)->getCalculatedValue();
                 $valH = $sheet->getCell('H' . $rowNum)->getCalculatedValue();
                 $valJ = $sheet->getCell('J' . $rowNum)->getCalculatedValue();
 
                 // ==================================================================
-                // PROSES SARINGAN (VALIDASI) - DIEU LOGIKANA, MANG!
+                // PROSES SARINGAN (VALIDASI)
                 // ==================================================================
-                // Skip upami:
-                // - Kolom A kosong, ATAWA boga nilai error bawaan Excel (kawas #VALUE!, #N/A, jsb)
-                // - ATAWA Kolom H (sender) kosong/mung spasi hungkul
-                // - ATAWA Kolom J (message) kosong/mung spasi hungkul
                 if (
                     empty($valA) || strpos(strval($valA), '#') === 0 || 
                     trim($valH) === '' || 
                     trim($valJ) === ''
                 ) {
-                    continue; // Luncat, ulah diprosés, langsung beralih ka baris salajengna!
+                    continue; // Luncat ka baris salajengna
                 }
                 // ==================================================================
 
+                // Validasi tambahan: Pastikeun $valA mangrupikeun angka numerik (tanggal Excel)
+                // Sangkan teu error pas dikirangan 25569
+                if (!is_numeric($valA)) {
+                    continue; 
+                }
+
                 // Prosés konversi tanggal Excel ka format DB MySQL
-                // (Excel ngetang poe ti taun 1900, matak dikirangan 25569)
                 $unix_date = ($valA - 25569) * 86400;
                 $unix_date_wib = $unix_date - 25200; // Saluyukeun zona waktu WIB
                 $dt = date("Y-m-d H:i:s", $unix_date_wib);
 
-                // Masukkeun data anu tos LULUS sensor langsung kana array utama
                 $dataUploaded[] = [
-                    'review_id'    => $id,
-                    'sender'       => trim($valH),
-                    'datetime'     => $dt,
-                    'message'      => trim($valJ),
-                    'response_time'=> $valB
+                    'review_id'     => $id,
+                    'sender'        => trim($valH),
+                    'datetime'      => $dt,
+                    'message'       => trim($valJ),
+                    'response_time' => $valB
                 ];
             }
 
-            // Upami saatos disaring tétéla teu aya data anu lulus sensor, ulah nembak DB
+            // Upami saatos disaring tétéla teu aya data anu lulus sensor
             if (empty($dataUploaded)) {
                 return 0; 
             }
@@ -940,6 +1021,14 @@ class Voice extends MY_Controller
             } else {
                 return 0;
             }
+
+        } catch (\Throwable $e) {
+            // TANGKAP ERROR (Boh error ti PhpSpreadsheet atanapi PHP System sapertos TypeError)
+            // Opsional: Tiasa simpen log errorna kanggo debugging
+            log_message('error', 'Error upload Excel WA Review: ' . $e->getMessage());
+            
+            // Mulangkeun 0 supados Controller utama terang ieu prosés GAGAL total
+            return 0;
         }
     }
 

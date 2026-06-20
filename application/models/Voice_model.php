@@ -241,6 +241,13 @@ class Voice_model extends CI_Model
         return $this->db->get('wa_review')->row_array();
     }
 
+    public function getWAReviewNumberByAgentByPeriod($agent, $period)
+    {
+        $this->db->where('agent', $agent);
+        $this->db->where('period', $period);
+        return $this->db->get('wa_review')->num_rows();
+    }
+
     public function addNewWaReview($data)
     {
         $this->db->insert('wa_review', $data);
@@ -253,6 +260,12 @@ class Voice_model extends CI_Model
         return $this->db->affected_rows();
     }
 
+    public function getWaReviewById($id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->get('wa_review')->row_array();
+    }
+
     public function getWaReviewByPeriodByAgent($startPeriod, $endPeriod, $agent = NULL)
     {
         if (!is_null($agent) || $agent !== 'NULL' || $agent !== NULL){
@@ -260,6 +273,8 @@ class Voice_model extends CI_Model
         }
         $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") >= ', $startPeriod);
         $this->db->where('DATE_FORMAT(datetime, "%Y-%m-%d") <= ', $endPeriod);
+        $this->db->order_by('agent', 'ASC');
+        $this->db->order_by('datetime', 'ASC');
         return $this->db->get('wa_review')->result_array();
     }
 
@@ -331,5 +346,12 @@ class Voice_model extends CI_Model
         $this->db->where('review_id', $id);
         $this->db->order_by('datetime', 'ASC');
         return $this->db->get('wa_raw')->result_array();
+    }
+
+    public function editWaReview($data)
+    {
+        $this->db->where('id', $data['id']);
+        $this->db->update('wa_review', $data);
+        return $this->db->affected_rows();
     }
 }

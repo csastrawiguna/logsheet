@@ -954,31 +954,6 @@ $(function () {
 		$("#cashlessInfoMonitoringSubmit").html('<i class="fas fa-save"></i> Save');
 	});
 
-	// $(".container-fluid").on("click", ".buttoncashlessInfoMonitoringEdit", function(e){
-	// 	// e.preventDefault();
-	// 	// var id = this.dataset.id;
-	// 	// SwalInfo('Unavailable', 'This function temporary unavailable', 'error');
-	// 	// $.ajax({
-	// 	// 	url : baseUrl + 'blackbook/agentCashlessMonitoringById',
-	// 	// 	dataType : "json",
-	// 	// 	data : {
-	// 	// 		id : id
-	// 	// 	}, 
-	// 	// 	method : "post",
-	// 	// 	success : function(data) {
-	// 	// 		// console.table(data);
-	// 	// 		$("#cashlessInfoMonitoringAddLabel").html("Edit Cashless Info Monitoring data");
-	// 	// 		$("#cashlessInfoMonitoringId").val(data.id);
-	// 	// 		$("#cashlessInfoMonitoringDate").val(data.date);
-	// 	// 		$("#cashlessInfoMonitoringAgent").val(data.agent);
-	// 	// 		$("#cashlessInfoMonitoringSource").val(data.source);
-	// 	// 		$("#cashlessInfoMonitoringCustomerData").val(data.customer_data);
-	// 	// 		$("#cashlessInfoMonitoringAgentDone").val(data.done_by_agent);
-	// 	// 		$("#cashlessInfoMonitoringSubmit").html('<i class="fas fa-check"></i> Update');
-	// 	// 	}
-	// 	// });
-	// });
-
 	$(".container-fluid").on("click", ".buttoncashlessInfoMonitoringDelete", function(e){
 		const id = this.dataset.id;
 		var title = "Are you sure to delete?";
@@ -4646,12 +4621,16 @@ $(function () {
 
 	// Get current WA review score
 	$("#waReviewSurveyAgent").on("change", function(){
-		waReviewByPeriodeByAgent();
+		waReviewByPeriodeByAgent($("#waReviewSurveyAgent"), $("#waReviewSurveyPeriod"), $("#waReviewSurveyLatestScore"), $("#waReviewSurveyVoiceNumber"));
 	});
 
-	function waReviewByPeriodeByAgent() {
-		var agent = $("#waReviewSurveyAgent").val();
-		var period = $("#waReviewSurveyPeriod").val();
+	$("#waReviewEditAgent").on("change", function(){
+		waReviewByPeriodeByAgent($("#waReviewEditAgent"), $("#waReviewEditPeriod"), $("#waReviewEditLatestScore"), $("#waReviewEditVoiceNumber"));
+	});
+
+	function waReviewByPeriodeByAgent(sourceAgent, sourcePeriod, targetPrevScore, targetVoiceNumber) {
+		var agent = sourceAgent.val();
+		var period = sourcePeriod.val();
 		$.ajax({
 			url : baseUrl + 'voice/waReviewCurrentMonthScore',
 			data : {
@@ -4661,10 +4640,9 @@ $(function () {
 			dataType : "json",
 			method : "post",
 			success : function(data) {
-				console.log(data);
 				var rslt = wa2barslite(data.averageScore, data.averageScore, 15);
-				$("#waReviewSurveyLatestScore").html(rslt);
-				$("#waReviewSurveyVoiceNumber").val(parseInt(data.qty) + 1);
+				targetPrevScore.html(rslt);
+				targetVoiceNumber.val(parseInt(data.qty) + 1);
 			}
 		});
 	}
@@ -4674,9 +4652,8 @@ $(function () {
 	CountWaReviewCurrentScore(waReviewInput, $("#waReviewSurveyCurrentScore"));
 
 	// Current Score on Edit WA Review
-	// var surveyEdit = $("#voiceSurveyEditContainer input:radio[name^='waReviewEdit']");
-	// voiceInfoByPeriodeByAgentOnEdit();
-	// countCurrentVoiceScoreOnClick(surveyEdit, $("#voiceSurveyEditCurrentScore"));
+	var waReviewEdit = $("#waReviewEditContainer input:radio[name^='waReviewEdit']");
+	CountWaReviewCurrentScore(waReviewEdit, $("#waReviewEditCurrentScore"));
 
 	function CountWaReviewCurrentScore(elmt, target) {
 		var initVal = 0;
@@ -4766,23 +4743,32 @@ $(function () {
 	                }
 	                
 	                // =======================================================
-	                // TAMPILAN 3: SENDER AGENT / ANJEUN (Katuhu - Kelir Biru Ngora)
-	                // =======================================================
-	                else if (chat.sender === 'agent') {
-	                    chatHtml += '<div class="d-flex flex-column align-items-end w-100">';
-	                    if (showName) {
-	                        chatHtml += '    <small class="text-danger font-weight-bold mr-1 mb-1" style="font-size: 11px;">👩‍💼 Agent (' + agentName + ')</small>';
-	                    }
-	                    chatHtml += '    <div class="p-2 text-dark shadow-sm border" style="background-color: #e2f0fd; border-radius: 8px 0px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #cfe2fe !important;">';
-	                    chatHtml += '        ' + chat.message;
-	                    chatHtml += '    </div>';
-	                    chatHtml += '    <small class="text-muted mr-1 mt-1" style="font-size: 10px;">' + tanggalTampil + '</small>';
-	                    chatHtml += '</div>';
-	                }
-	                
-	                // *Catetan: Upami Mang miboga tipe data 'system_alert' atanapi 'response_time' dina kolom sender,
-	                // kantun tambihan baé logika 'else if (chat.sender === "system_alert")' di handapna luyu jeung conto kamari.
-	                
+					// TAMPILAN 3: SENDER AGENT / ANJEUN (Katuhu - Kelir Biru Ngora)
+					// =======================================================
+					else if (chat.sender === 'agent') {
+					    chatHtml += '<div class="d-flex flex-column align-items-end w-100">';
+					    
+					    if (showName) {
+					        chatHtml += '    <small class="text-danger font-weight-bold mr-1 mb-1" style="font-size: 11px;">👩‍💼 Agent (' + agentName + ')</small>';
+					    }
+
+					    // ---------------------------------------------------
+					    // LOGIKA ALERT KONENG (SLA / RESPONSE TIME > 300 DETIK)
+					    // ---------------------------------------------------
+					    if (parseInt(chat.response_time) > 300) {
+					        var wktuTampil = formatResponseTime(chat.response_time);
+					        chatHtml += '    <div class="alert alert-warning py-1 px-2 my-1 border text-dark font-weight-bold shadow-sm" style="font-size: 11px; background-color: #fff3cd; border-color: #ffeeba !important; border-radius: 6px; max-width: 80%;">';
+					        chatHtml += '        ⚠️ Merespon setelah ' + wktuTampil + ' detik';
+					        chatHtml += '    </div>';
+					    }
+					    // ---------------------------------------------------
+
+					    chatHtml += '    <div class="p-2 text-dark shadow-sm border" style="background-color: #e2f0fd; border-radius: 8px 0px 8px 8px; max-w: 80%; font-size: 13.5px; border-color: #cfe2fe !important;">';
+					    chatHtml += '        ' + chat.message;
+					    chatHtml += '    </div>';
+					    chatHtml += '    <small class="text-muted mr-1 mt-1" style="font-size: 10px;">' + tanggalTampil + '</small>';
+					    chatHtml += '</div>';
+					}
 	            });
 
 	            // Lebuskeun HTML na ka jero wadah utama bagean chat
@@ -4820,6 +4806,39 @@ $(function () {
 	    // Hasil ahir: 06 Jun 2026 17:49
 	    return tanggal + ' ' + bulan + ' ' + tahun + ' ' + jam + ':' + menit;
 	}
+
+	function formatResponseTime(detik){
+	    var menit = Math.floor(detik / 60);
+	    var sisaDetik = detik % 60;
+	    
+	    // Sangkan upami detikna saalit (misal 5 detik) janten "05"
+	    if (sisaDetik < 10) {
+	        sisaDetik = '0' + sisaDetik;
+	    }
+	    return menit + ' menit ' + sisaDetik;
+	}
+
+	$(".container-fluid").on("click", ".buttonWaReviewViewEdit", function() {
+		var link = baseUrl + 'voice/wareviewedit/' + this.dataset.id;
+		SwalConfirm("Please Confirm", "Sure to edit the WA review result?", link, "Yes, edit", "warning")
+	});
+
+	// Auto change Period according to conversation change on Edit data
+    $('#waReviewEditConversationDate').on('change input', function() {
+        var datetimeVal = $(this).val(); // Hasilna: YYYY-MM-DDTHH:mm
+        if (datetimeVal) {
+            // Sabet bagian taun sarta bulanna hungkul (7 karakter mimiti: YYYY-MM)
+            var tahunBulan = datetimeVal.substring(0, 7); 
+            // Gabungkeun sareng tanggal 01 keur periodena
+            var formatPeriode = tahunBulan + '-01'; 
+            // Set value ka input periode review survey
+            $('#waReviewEditPeriod').val(formatPeriode);
+        } else {
+            // Upami input kahiji dikosongkeun, input kadua milu kosong
+            $('#waReviewEditPeriod').val('');
+        }
+    });
+
 
 	// ----------------------------------------------------------------------------------
 
