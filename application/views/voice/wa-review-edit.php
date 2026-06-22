@@ -172,7 +172,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <input type="" class="form-control" id="waReviewEditResponseRemark" name="waReviewEditResponseRemark" placeholder="Keterangan info tidak/kurang akurat">
+                                            <input type="" class="form-control" id="waReviewEditResponseRemark" name="waReviewEditResponseRemark" value="<?= $waReviewById['response_remark'] ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -217,7 +217,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <input type="" class="form-control" id="waReviewEditAccuracyRemark" name="waReviewEditAccuracyRemark" placeholder="Keterangan info tidak/kurang akurat">
+                                            <input type="" class="form-control" id="waReviewEditAccuracyRemark" name="waReviewEditAccuracyRemark" value="<?= $waReviewById['accuracy_remark'] ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -262,7 +262,7 @@
                                             </div>
                                         </div>
                                         <div class="">
-                                            <input type="" class="form-control" id="waReviewEditWordingRemark" name="waReviewEditWordingRemark" placeholder="Keterangan kurang/tidak ada smile voice">
+                                            <input type="" class="form-control" id="waReviewEditWordingRemark" name="waReviewEditWordingRemark" value="<?= $waReviewById['wording_remark'] ?>">
                                         </div>
                                     </div>
                                 </div>
