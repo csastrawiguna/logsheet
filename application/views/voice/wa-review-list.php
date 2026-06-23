@@ -88,15 +88,22 @@
                                     <td class="align-middle">
                                         <?= $row['remark'] ?>
                                     </td>
-                                    <td class="align-middle">
-                                        <a href="#" data-id="<?= $row['id'] ?>" data-agent="<?= $row['agent'] ?>" data-datetime="<?= $row['datetime'] ?>" data-customerphone="<?= $row['customer_phone'] ?>" class="buttonWaReviewViewDetail" data-toggle="modal" data-target="#modalWaReviewDetaiChatModal">  <i class="fas fa-search text-info"></i>
-                                        </a> 
+                                    <td class="align-middle text-center">
                                         <?= surveyorTag($row['saved_by'], $row['saved_at']) ?>
-                                        <?php if ($allowedAccess) : ?>
-                                            <br>
-                                            <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewEdit"><i class="fas fa-edit text-secondary"></i></a>  &nbsp; 
-                                            <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewDelete"><i class="fas fa-times text-danger"></i></a> 
-                                        <?php endif; ?>
+                                        <div class="btn-group mt-2" style="border: 1px #efefef solid; border-radius: 3px;">
+                                            <button type="button" class="btn btn-sm btn-light">
+                                                <a href="#" data-id="<?= $row['id'] ?>" data-agent="<?= $row['agent'] ?>" data-datetime="<?= $row['datetime'] ?>" data-customerphone="<?= $row['customer_phone'] ?>" class="buttonWaReviewViewDetail" data-toggle="modal" data-target="#modalWaReviewDetaiChatModal">  <i class="fas fa-search text-primary"></i>
+                                                </a>
+                                            </button>
+                                            <?php if ($allowedAccess) : ?>
+                                                <button type="button" class="btn btn-sm btn-light">
+                                                    <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewEdit"><i class="fas fa-edit text-dark"></i></a>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-light">
+                                                    <a href="#" data-id="<?= $row['id'] ?>" class="buttonWaReviewViewDelete"><i class="fas fa-times text-danger"></i></a> 
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
