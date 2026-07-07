@@ -3,3 +3,31 @@ RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?/$1 [L]
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Paksa cache murni keur asset salila 1 Bulan sacara lokal di PC client
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Set Cache-Control pikeun mastikeun browser entong nanya-nanya ka server
+    <FilesMatch "\.(js|css|png|jpg|jpeg|gif|ico|svg)$">
+        Header set Cache-Control "max-age=2592000, public, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+    # GZIP Compression: Sangkan file JS 3000 baris Akang dikompres otomatis jadi leutik pisan pas ngaliwatan kabel LAN
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
