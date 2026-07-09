@@ -25,8 +25,8 @@ class Export extends MY_Controller
     {
         // 1. Konfigurasi FTP
         $config['hostname'] = '192.168.180.140';
-        $config['username'] = 'gay0900276';
-        $config['password'] = '2026Februar!'; 
+        $config['username'] = 'anonymous';
+        $config['password'] = 'anonymous@local.com'; 
         $config['debug']    = TRUE;
 
         // Cek koneksi sakaligus connect
@@ -51,7 +51,7 @@ class Export extends MY_Controller
         }
 
         // Path Konfigurasi
-        $remote_path = "callcenterdata/Cuparsa/DBBackup/Logsheet/" . $sub . "/"; 
+        $remote_path = "/callcenterdata/Cuparsa/DBBackup/Logsheet/" . $sub . "/"; 
         $zip_name    = "LOGSHEET_Backup_" . $sub . "_" . $yesterday . ".zip";
         $local_temp  = FCPATH . "temp/" . $zip_name; // Pastikeun folder 'temp' aya di root CI
 
